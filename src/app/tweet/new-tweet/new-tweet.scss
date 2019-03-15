@@ -1,0 +1,17 @@
+page-new-tweet {
+  ion-header[transparent]::after {
+    background: none !important;
+  }
+
+  ion-textarea {
+    height: 200px;
+  }
+
+  .img-preview {
+    background-position: center center;
+    background-repeat: no-repeat;
+    -webkit-background-size: contain;
+    background-size: contain;
+    height: 250px;
+  }
+}

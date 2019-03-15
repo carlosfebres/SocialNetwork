@@ -1,0 +1,9 @@
+page-home {
+  ion-header[transparent]::after {
+    background: none !important;
+  }
+
+  tweet {
+    margin-top: 10px;
+  }
+}

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-searchbar (ionInput)="getUsers($event)" animated placeholder="Search User"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <user-item *ngFor="let user of users" [user]="user" (click)="goToUserDetail(user)"></user-item>
+    <h4 *ngIf="users.length == 0 && clean">Search Something...</h4>
+    <h4 *ngIf="users.length == 0 && !clean">No Results!</h4>
+  </ion-list>
+  <div class="fullscreen-center" *ngIf="loading">
+    <div align="center" style="width: 100%;"><ion-spinner></ion-spinner></div>
+  </div>
+</ion-content>

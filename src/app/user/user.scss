@@ -1,0 +1,61 @@
+page-user {
+  .big-number {
+    font-size: 22px;
+    font-weight: bold;
+  }
+  ion-col div {
+    text-align: center;
+  }
+  .follow button[ion-item] {
+    padding: 0;
+    background-color: rgba(240,240,240,.8) !important;
+    border-radius: 10px;
+  }
+  .profile-background {
+    background: radial-gradient(#aefff8, #1b94e0) !important;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+
+    button {
+      width: 50%;
+    }
+  }
+
+  .profile {
+
+    ion-col {
+      text-align: center;
+    }
+
+    div {
+      width: 50%;
+      display: inline-block;
+      position: relative;
+
+      ion-avatar {
+        overflow: hidden;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        width: 175px;
+        height: 175px;
+        margin-top: 20px;
+      }
+
+      button {
+        position: absolute;
+        top: 5%;
+        left: 80%;
+        height: 20%;
+        width: 20%;
+      }
+    }
+    h2, p {
+      text-align: center;
+      color: rgb(70,70,70);
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Tweeter URU",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

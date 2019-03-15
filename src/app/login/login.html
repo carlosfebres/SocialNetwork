@@ -1,0 +1,41 @@
+<ion-toolbar transparent color="transparent">
+  <ion-buttons end>
+    <button ion-button icon-only color="light">
+      <ion-icon name="cog"></ion-icon>
+    </button>
+  </ion-buttons>
+</ion-toolbar>
+
+
+<ion-content padding>
+
+  <!--<img class="main-logo" src="./assets/imgs/logo-twitter.png"/>-->
+  <div align="center">
+    <ion-icon class="logo-icon" name="logo-twitter"></ion-icon>
+  </div>
+
+  <ion-list>
+    <ion-item *ngIf="!loginForm" [class.invalid]="(error == 'input' && !name.length)">
+      <ion-input placeholder="Name" type="text" [(ngModel)]="name"></ion-input>
+    </ion-item>
+    <ion-item [class.invalid]="(error == 'input' && !email.length) || error == 'email'">
+      <ion-input placeholder="E-Mail" type="email" required [(ngModel)]="email"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="!loginForm" [class.invalid]="(error == 'input' && !username.length) || error == 'username'">
+      <ion-input placeholder="Username" type="text" [(ngModel)]="username"></ion-input>
+    </ion-item>
+    <ion-item [class.invalid]="(error == 'input' && !password.length) || error == 'password'">
+      <ion-input placeholder="Password" type="password" [(ngModel)]="password" required></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <div align="center">
+    <button ion-button round color="primary" (click)="execute()">{{loginForm?"Log In":"Sign Up"}}</button>
+  </div>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar transparent>
+    <button ion-button full color="light" (click)="change()" clear>{{!loginForm?"Log In":"Sign Up"}}</button>
+  </ion-toolbar>
+</ion-footer>

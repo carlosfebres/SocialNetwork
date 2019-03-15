@@ -1,0 +1,20 @@
+<!--<ion-tabs color="primary">-->
+<!--<ion-tab tabIcon="home" [root]="home"></ion-tab>-->
+<!--<ion-tab tabIcon="person" [root]="user"></ion-tab>-->
+<!--<ion-tab tabIcon="search" [root]="search"></ion-tab>-->
+<!--<ion-tab tabIcon="chatboxes" [root]="chats"></ion-tab>-->
+<!--</ion-tabs>-->
+<ion-tabs>
+	<ion-tab label="Dashboard" icon="home" href="/tabs/(dashboard-tab:dashboard)">
+		<ion-router-outlet name="dashboard-tab"></ion-router-outlet>
+	</ion-tab>
+	<ion-tab label="Profile" icon="person" href="/tabs/(profile-tab:profile)">
+		<ion-router-outlet name="profile-tab"></ion-router-outlet>
+	</ion-tab>
+	<ion-tab label="Search" icon="search" href="/tabs/(search-tab:user/search)">
+		<ion-router-outlet name="search-tab"></ion-router-outlet>
+	</ion-tab>
+	<ion-tab label="Chats" icon="chatboxes" href="/tabs/(chats-tab:chats)">
+		<ion-router-outlet name="chats-tab"></ion-router-outlet>
+	</ion-tab>
+</ion-tabs>

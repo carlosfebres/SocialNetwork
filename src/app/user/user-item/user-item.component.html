@@ -1,0 +1,7 @@
+<button ion-item [class.background]="background">
+	<ion-avatar slot="start">
+		<img [src]="user.profileImage?helper.getUrl(user.profileImage):'assets/imgs/img_avatar.png'">
+	</ion-avatar>
+	<h2>{{user.name}}</h2>
+	<p>@{{user.username}}</p>
+</button>

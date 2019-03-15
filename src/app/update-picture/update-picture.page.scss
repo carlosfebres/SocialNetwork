@@ -1,0 +1,20 @@
+:host {
+  .button-text-left  span{
+    text-align: left;
+  }
+
+  .flex-center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+  }
+
+  ion-content * {
+    color: #8f8f8f;
+  }
+
+  .dark-background {
+    background-color: rgb(70,70,70) !important;
+  }
+}

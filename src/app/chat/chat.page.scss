@@ -1,0 +1,23 @@
+:host {
+  .my-message {
+    background-color: rgba(150,150,150,.1) !important;
+  }
+  ion-item {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .flex-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+
+    ion-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  }
+}

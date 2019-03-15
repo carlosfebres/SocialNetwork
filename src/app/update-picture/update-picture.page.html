@@ -1,0 +1,38 @@
+<ion-header>
+	<ion-toolbar color="primary">
+		<ion-title>{{title}}</ion-title>
+		<ion-buttons start>
+			<button ion-button icon-only (click)="dismiss()">
+				<ion-icon name="close"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content [class.dark-background]="profileImageSrc">
+	<div class="flex-center">
+		<div style="width: 100%;" *ngIf="!profileImageSrc">
+			<div align="center">
+				<ion-icon style="font-size: 200px;" name="images"></ion-icon>
+			</div>
+			<h4 text-center>Choose an Image</h4>
+		</div>
+		<img [src]="profileImageSrc" *ngIf="profileImageSrc">
+	</div>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<input type="file" style="display: none;" accept="image/*" (change)="onFileChanged(file)" #file>
+		<button clear block color="dark" icon-left class="button-text-left" ion-button (click)="file.click()">
+			<ion-icon name="image"></ion-icon>
+			Choose Image
+		</button>
+		<ion-buttons end>
+			<button ion-button icon-end color="royal" (click)="send()">
+				Submit
+				<ion-icon name="send"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>

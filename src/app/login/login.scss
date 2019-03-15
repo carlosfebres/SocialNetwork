@@ -1,0 +1,77 @@
+page-login {
+  ion-content {
+    //background-color: #1da1f3 !important;
+    background: linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);
+    background-size: 600% 600%;
+    -webkit-animation: Gradient 15s ease infinite;
+    -moz-animation: Gradient 15s ease infinite;
+    animation: Gradient 15s ease infinite;
+  }
+  .main-logo {
+    width: 50%;
+    display: block;
+    margin: 40px auto 20px;
+    max-width: 300px;
+  }
+
+  .logo-icon {
+    margin: 40px auto 20px;
+    font-size: 200px;
+    color: rgba(255,255,255,.9);
+  }
+
+  ion-input, ion-input input::placeholder {
+    color: white !important;
+  }
+
+  ion-item {
+    margin-bottom: 15px !important;
+    border-radius: 20px !important;
+    background: rgba(240,240,240,.3) !important;
+    -webkit-transition: all .5s ease !important;
+    -moz-transition: all .5s ease !important;
+    -ms-transition: all .5s ease !important;
+    -o-transition: all .5s ease !important;
+    transition: all .5s ease !important;
+  }
+
+  .invalid {
+    box-shadow: 0 0 3px 2px rgb(255,0,0) !important;
+  }
+
+  @-webkit-keyframes Gradient {
+    0% {
+      background-position: 0% 50%
+    }
+    50% {
+      background-position: 100% 50%
+    }
+    100% {
+      background-position: 0% 50%
+    }
+  }
+
+  @-moz-keyframes Gradient {
+    0% {
+      background-position: 0% 50%
+    }
+    50% {
+      background-position: 100% 50%
+    }
+    100% {
+      background-position: 0% 50%
+    }
+  }
+
+  @keyframes Gradient {
+    0% {
+      background-position: 0% 50%
+    }
+    50% {
+      background-position: 100% 50%
+    }
+    100% {
+      background-position: 0% 50%
+    }
+  }
+}

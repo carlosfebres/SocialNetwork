@@ -1,0 +1,14 @@
+:host {
+  button {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+  .background {
+    background: linear-gradient(#00f6be, #00d7a6);
+    h2, p {
+      color: #fff !important;
+      text-shadow: 1px 1px 1px rgba(100,100,100,.3);
+    }
+  }
+
+}
