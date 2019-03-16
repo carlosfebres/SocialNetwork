@@ -1,9 +1,9 @@
 import {Component, Input} from '@angular/core';
-import {ActionSheetController, NavParams} from '@ionic/angular';
+import {ActionSheetController} from '@ionic/angular';
 import {UserService} from '../../services/user.service';
-import {UserPage} from '../../user/user';
 import {HelperService} from '../../services/helper.service';
-import {Tweet} from '../../services/tweets.service';
+import {Tweet, TweetService} from '../../services/tweets.service';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -17,21 +17,18 @@ export class CommentsPage {
     public comment = '';
 
     constructor(
-        public navParams: NavParams,
-        public userProvider: UserService,
+        private router: Router,
+        public userService: UserService,
+        public tweetService: TweetService,
         public actionSheetController: ActionSheetController,
         public helper: HelperService
     ) {
     }
 
-    // close() {
-    //     this.navCtrl.pop();
-    // }
-
     send() {
-        this.userProvider.comment(this.tweet._id, this.comment).subscribe(
+        this.tweetService.comment(this.tweet._id, this.comment).subscribe(
             (res: { comment: any }) => {
-                res.comment.user = this.userProvider.user;
+                res.comment.user = this.userService.user;
                 this.tweet.comments.push(res.comment);
                 this.comment = '';
             }
@@ -43,7 +40,7 @@ export class CommentsPage {
             {
                 text: 'Go To Profile',
                 handler: () => {
-                    // this.goToProfile(comment.user);
+                    this.router.navigate([`/user/${comment.user.username}`]);
                 }
             }, {
                 text: 'Cancel',
@@ -51,7 +48,7 @@ export class CommentsPage {
             }
         ];
 
-        if (comment.user === this.userProvider.user._id || this.tweet.user._id === this.userProvider.user._id) {
+        if (comment.user === this.userService.user._id || this.tweet.user._id === this.userService.user._id) {
             buttons.push({
                 text: 'Delete Comment',
                 role: 'destructive'
@@ -65,20 +62,9 @@ export class CommentsPage {
         await actionSheet.present();
     }
 
-    // TODO Go To Profile
-    // private goToProfile(user: any) {
-    //     this.userProvider.getUser(user).subscribe(
-    //         (data: any) => {
-    //             this.navCtrl.push(UserPage, {
-    //                 user: data.user
-    //             });
-    //         }
-    //     );
-    // }
-
     // TODO Use Method
     private deleteComment(comment: any) {
-        this.userProvider.deleteComment(this.tweet._id, comment._id).subscribe(
+        this.tweetService.deleteComment(this.tweet._id, comment._id).subscribe(
             () => {
                 const index = this.tweet.comments.indexOf(comment);
                 if (index >= 0) {

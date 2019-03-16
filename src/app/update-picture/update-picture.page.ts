@@ -1,10 +1,10 @@
 import {Component, Input} from '@angular/core';
-import {LoadingController, NavParams, ToastController} from '@ionic/angular';
+import {LoadingController, ToastController} from '@ionic/angular';
 
-@IonicPage()
 @Component({
     selector: 'page-update-profile-picture',
-    templateUrl: 'update-picture.page.html',
+    templateUrl: './update-picture.page.html',
+    styleUrls: ['./update-picture.page.scss']
 })
 export class UpdatePicturePage {
 
@@ -14,7 +14,6 @@ export class UpdatePicturePage {
     @Input() callback;
 
     constructor(
-        public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController
     ) {
@@ -23,15 +22,15 @@ export class UpdatePicturePage {
     async send() {
         if (this.file) {
             const loader = await this.loadingCtrl.create({message: 'Please wait...'});
-            loader.present();
+            await loader.present();
             try {
                 await this.callback(this.file);
-                loader.dismiss();
+                await loader.dismiss();
                 const toast = await this.toastCtrl.create({
                     message: 'Picture Uploaded!',
                     duration: 3000
                 });
-                toast.present();
+                await toast.present();
                 this.dismiss();
             } catch (err) {
                 console.log(err);
@@ -66,10 +65,5 @@ export class UpdatePicturePage {
             this.profileImageSrc = null;
         }
     }
-
-    // TODO implement dismiss
-    // dismiss() {
-    //     this.viewCtrl.dismiss();
-    // }
 
 }

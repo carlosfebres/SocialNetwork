@@ -1,13 +1,18 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { CommentsPage } from './comments.page';
+import {NgModule} from '@angular/core';
+import {CommentsPage} from './comments.page';
+import {CommonModule} from '@angular/common';
+import {IonicModule} from '@ionic/angular';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
-  declarations: [
-    CommentsPage,
-  ],
-  imports: [
-    IonicPageModule.forChild(CommentsPage),
-  ],
+    declarations: [
+        CommentsPage
+    ],
+    imports: [
+        CommonModule,
+        IonicModule,
+        RouterModule.forChild([{path: '', component: CommentsPage}])
+    ]
 })
-export class CommentsPageModule {}
+export class CommentsModule {
+}

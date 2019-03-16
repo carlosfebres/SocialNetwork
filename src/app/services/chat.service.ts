@@ -3,7 +3,7 @@ import {HttpService} from './http.service';
 import {UserService} from './user.service';
 import {Observable, of} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {User} from '../user/user';
+import {User} from '../user/user.page';
 
 export interface Chat {
     _id?: string;
@@ -47,14 +47,14 @@ export class ChatService {
         return this.chats = await this.chats$.toPromise();
     }
 
-    getChat(userId: string): Observable<Chat> {
-        console.log('Get Chat From UserId: ', userId);
+    getChat(username: string): Observable<Chat> {
+        console.log('Get Chat By Username: ', username);
         for (const x of Object.keys(this.chats)) {
-            if (this.chats[x].user1._id === userId) {
+            if (this.chats[x].user1.username === username) {
                 return of(this.chats[x]);
             }
         }
-        return this.userService.getUser(userId).pipe(
+        return this.userService.getUserByUsername(username).pipe(
             map(user => ChatService.newChat(user))
         );
     }

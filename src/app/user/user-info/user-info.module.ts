@@ -1,13 +1,18 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { UserInfoPage } from './user-info';
+import {NgModule} from '@angular/core';
+import {UserInfoPage} from './user-info';
+import {CommonModule} from '@angular/common';
+import {IonicModule} from '@ionic/angular';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
-  declarations: [
-    UserInfoPage,
-  ],
-  imports: [
-    IonicPageModule.forChild(UserInfoPage),
-  ],
+    declarations: [
+        UserInfoPage,
+    ],
+    imports: [
+        CommonModule,
+        IonicModule,
+        RouterModule.forChild([{path: '', component: UserInfoPage}])
+    ],
 })
-export class UserInfoPageModule {}
+export class UserInfoModule {
+}

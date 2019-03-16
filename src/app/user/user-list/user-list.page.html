@@ -1,0 +1,10 @@
+<ion-header>
+	<ion-navbar color="primary">
+		<ion-title>{{title}}</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+	<user-item *ngFor="let user of users$ | async" [user]="user" (click)="goToUserDetail(user)"></user-item>
+	<h4 style="color: rgb(170,170,170); text-align: center;" *ngIf="!users.length">No Follow</h4>
+</ion-content>

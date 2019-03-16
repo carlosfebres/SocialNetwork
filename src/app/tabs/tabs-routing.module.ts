@@ -31,7 +31,8 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: '/tabs/(dashboard-tab:dashboard)'
+        redirectTo: '/tabs/(dashboard-tab:dashboard)',
+        pathMatch: 'full'
     }
 ];
 

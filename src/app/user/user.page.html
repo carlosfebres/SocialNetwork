@@ -1,0 +1,68 @@
+<div *ngIf="(user$ | async) as user">
+	<ion-header>
+		<ion-navbar color="primary">
+			<ion-title>@{{user.username}}</ion-title>
+			<ion-buttons *ngIf="user._id === userService.user._id" end>
+				<button ion-button icon-only (click)="myData()">
+					<ion-icon name="cog"></ion-icon>
+				</button>
+			</ion-buttons>
+		</ion-navbar>
+	</ion-header>
+
+	<ion-content>
+		<div class="profile-background">
+			<ion-grid class="profile">
+				<ion-row>
+					<ion-col align-self-center>
+						<div>
+							<ion-avatar>
+								<img [src]="user.profileImage?helper.getUrl(user.profileImage):'assets/imgs/img_avatar.png'">
+							</ion-avatar>
+							<button *ngIf="user._id == userService.user._id" ion-button icon-only round color="light"
+									(click)="updateProfilePicture()">
+								<ion-icon name="md-create"></ion-icon>
+							</button>
+						</div>
+						<h2>{{user.name}}</h2>
+						<p>@{{user.username}}</p>
+					</ion-col>
+				</ion-row>
+			</ion-grid>
+			<div padding-horizontal="5" class="buttons" *ngIf="!user._id === userService.user._id">
+				<button ion-button round *ngIf="following" color="danger" icon-left (click)="followManager()">
+					<ion-icon name="thumbs-down"></ion-icon>
+					Unfollow
+				</button>
+				<button ion-button round *ngIf="!following" color="secondary" icon-left (click)="followManager()">
+					<ion-icon name="thumbs-up"></ion-icon>
+					Follow
+				</button>
+				<button ion-button round color="light" icon-left (click)="chat()">
+					<ion-icon name="text"></ion-icon>
+					ChatService
+				</button>
+			</div>
+			<ion-grid class="follow">
+				<ion-row>
+					<ion-col>
+						<button ion-item clear block (click)="goToFollowers(user)">
+							<div class="big-number">{{user.followers.length}}</div>
+							<div>Followers</div>
+						</button>
+					</ion-col>
+					<ion-col>
+						<button ion-item clear block (click)="goToFollowing(user)">
+							<div class="big-number">{{user.following.length}}</div>
+							<div>Following</div>
+						</button>
+					</ion-col>
+				</ion-row>
+			</ion-grid>
+		</div>
+
+		<tweet *ngFor="let tweet of user.tweets" [tweets]="user.tweets" [data]="tweet"></tweet>
+		<h4 style="color: rgb(170,170,170); text-align: center;" *ngIf="!user.tweets.length">No Tweets Published</h4>
+
+	</ion-content>
+</div>

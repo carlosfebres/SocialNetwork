@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CommentsPage} from './comments/comments.page';
 import {UserService} from '../services/user.service';
 import {HelperService} from '../services/helper.service';
 import {ActionSheetController, AlertController, ModalController, ToastController} from '@ionic/angular';
+import {TweetService} from '../services/tweets.service';
+import {SocialSharing} from '@ionic-native/social-sharing/ngx';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class TweetComponent implements OnInit {
     constructor(
         public modalController: ModalController,
         public userProvider: UserService,
+        public tweetService: TweetService,
         public actionSheetCtrl: ActionSheetController,
         public alertController: AlertController,
         public socialSharing: SocialSharing,
@@ -78,24 +80,23 @@ export class TweetComponent implements OnInit {
         if (this.data.image) {
             image = this.helper.getUrl(this.data.image);
         }
-        this.socialSharing.shareVia(app, this.data.body, null, image).catch(async () => {
-            const toast = await this.toastController.create({
+        this.socialSharing.shareVia(app, this.data.body, null, image).catch(() => {
+            this.toastController.create({
                 message: 'Can\'t Share Via ' + app,
                 duration: 3000
-            });
-            toast.present();
+            }).then(toast => toast.present());
         });
     }
 
-    async comment() {
-        const modal = await this.modalController.create({
-            component: CommentsPage,
-            componentProps: {
-                tweet: this.data
-            }
-        });
-        return await modal.present();
-    }
+    // async comment() {
+    //     const modal = await this.modalController.create({
+    //         component: CommentsPage,
+    //         componentProps: {
+    //             tweet: this.data
+    //         }
+    //     });
+    //     return await modal.present();
+    // }
 
     manageLike() {
         if (this.liked) {
@@ -106,7 +107,7 @@ export class TweetComponent implements OnInit {
     }
 
     private unlike() {
-        this.userProvider.unlike(this.data._id).subscribe(
+        this.tweetService.unlike(this.data._id).subscribe(
             res => {
                 this.liked = false;
                 const index = this.data.favorites.indexOf(this.userProvider.user._id);
@@ -116,7 +117,7 @@ export class TweetComponent implements OnInit {
     }
 
     private like() {
-        this.userProvider.like(this.data._id).subscribe(
+        this.tweetService.like(this.data._id).subscribe(
             res => {
                 this.liked = true;
                 this.data.favorites.push(this.userProvider.user._id);
@@ -135,7 +136,7 @@ export class TweetComponent implements OnInit {
                 {
                     text: 'Yes',
                     handler: () => {
-                        this.userProvider.deleteTweet(this.data).then(res => {
+                        this.tweetService.deleteTweet(this.data).subscribe(res => {
                             if (this.tweets) {
                                 const index = this.tweets.indexOf(this.data);
                                 if (index >= 0) {
@@ -146,6 +147,6 @@ export class TweetComponent implements OnInit {
                     }
                 }
             ]
-        }).present();
+        }).then(actionSheet => actionSheet.present());
     }
 }

@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ActionSheetController, ModalController} from '@ionic/angular';
 import {HelperService} from '../../services/helper.service';
-import {NewChatPage} from '../new-chat/new-chat';
+import {NewChatPage} from '../new-chat/new-chat.page';
 import {Chat, ChatService} from '../../services/chat.service';
 import {delay, repeat} from 'rxjs/operators';
 
@@ -10,7 +10,7 @@ import {delay, repeat} from 'rxjs/operators';
     templateUrl: './chats-list.page.html',
     styleUrls: ['./chats-list.page.scss']
 })
-export class ChatsListPage implements OnInit {
+export class ChatsListPage {
 
     public chats$ = this.chatService.chats$.pipe(
         delay(5000),
@@ -26,7 +26,7 @@ export class ChatsListPage implements OnInit {
     }
 
     refresh(refresher) {
-        console.log('Refresing...');
+        console.log('Refreshing...');
         setTimeout(async () => {
             await this.chats$.toPromise();
             refresher.complete();
@@ -35,10 +35,11 @@ export class ChatsListPage implements OnInit {
 
     async showOptions(chat: Chat) {
         const actionSheet = await this.actionSheetCtrl.create({
-            title: 'ChatService With ' + chat.user1.name,
+            header: 'ChatService With ' + chat.user1.name,
             buttons: [
                 {
                     text: 'Go To Profile',
+                    icon: 'user',
                     handler: () => {
                         // TODO Go To Profile
                     }
@@ -55,11 +56,11 @@ export class ChatsListPage implements OnInit {
     //     this.navCtrl.push(ChatPage, {chat});
     // }
 
-    async newChat() {
-        const modal = await this.modalCtrl.create({
-            component: NewChatPage
-        });
-        return await modal.present();
-    }
+    // async newChat() {
+    //     const modal = await this.modalCtrl.create({
+    //         component: NewChatPage
+    //     });
+    //     return await modal.present();
+    // }
 
 }

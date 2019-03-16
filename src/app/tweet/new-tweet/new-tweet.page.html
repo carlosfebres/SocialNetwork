@@ -1,0 +1,35 @@
+<ion-header transparent>
+	<ion-navbar color="primary">
+		<ion-buttons start>
+			<button ion-button icon-only (click)="close()">
+				<ion-icon name="close"></ion-icon>
+			</button>
+		</ion-buttons>
+		<ion-title>New Tweet</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content padding>
+	<ion-textarea [(ngModel)]="text" placeholder="Insert your tweet here..."></ion-textarea>
+	<div class="card-background-page" *ngIf="imageSource">
+		<ion-card>
+			<img [src]="imageSource"/>
+		</ion-card>
+	</div>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<button ion-button icon-only (click)="file.click()">
+			<ion-icon name="image"></ion-icon>
+		</button>
+		<input type="file" style="display: none;" accept="image/*" (change)="onFileChanged(file)" #file>
+
+		<ion-buttons end>
+			<button ion-button icon-end color="royal" (click)="send()">
+				Tweet
+				<ion-icon name="send"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>

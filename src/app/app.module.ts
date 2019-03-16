@@ -9,7 +9,6 @@ import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {PipesModulePipe} from './pipes/pipes.module.pipe';
-import {ChatModule} from './chat/chat.module';
 
 @NgModule({
     declarations: [AppComponent],

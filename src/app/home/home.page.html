@@ -1,0 +1,40 @@
+<ion-header transparent>
+	<ion-navbar color="primary">
+		<ion-title>
+			<ion-icon name="logo-twitter"></ion-icon>
+			Home
+		</ion-title>
+		<ion-buttons end>
+			<button ion-button icon-only (click)="logout()">
+				<ion-icon name="power"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+	<div *ngIf="(tweets$ | async) as tweets">
+
+		<ion-refresher (ionRefresh)="refresh($event)">
+			<ion-refresher-content></ion-refresher-content>
+		</ion-refresher>
+
+		<tweet *ngFor="let tweet of tweets" [tweets]="tweets" [data]="tweet"></tweet>
+
+		<ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+			<ion-infinite-scroll-content
+					loadingSpinner="bubbles"
+					loadingText="Loading more data...">
+			</ion-infinite-scroll-content>
+		</ion-infinite-scroll>
+
+	</div>
+
+	<ion-fab right bottom>
+		<button ion-fab color="secondary" (click)="newTweet()">
+			<ion-icon name="create"></ion-icon>
+		</button>
+	</ion-fab>
+
+</ion-content>
