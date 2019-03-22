@@ -1,0 +1,40 @@
+<ion-header>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-button (click)="close()">
+				<ion-icon name="close" slot="icon-only"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+		<ion-icon name="cog" slot="start"></ion-icon>
+		<ion-title>
+			Configuration
+		</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+	<ion-item>
+		<ion-label>Server Address: </ion-label>
+		<ion-input type="url" [(ngModel)]="serverAddress"></ion-input>
+	</ion-item>
+
+	<ion-item>
+		<ion-label>Server Port: </ion-label>
+		<ion-input type="number" [(ngModel)]="serverPort"></ion-input>
+	</ion-item>
+
+	<ion-button expand="block" shape="round" (click)="save()">
+		<ion-icon name="save" slot="start"></ion-icon>
+		SAVE
+	</ion-button>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<ion-buttons slot="end">
+			<ion-button (click)="server()">
+				<ion-icon name="chatboxes" slot="icon-only"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>

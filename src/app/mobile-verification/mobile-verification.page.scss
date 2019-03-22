@@ -1,0 +1,38 @@
+:host {
+  --ion-background-color: transparent;
+  background: linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);
+  background-size: 600% 600%;
+  -webkit-animation: Gradient 15s ease infinite;
+  -moz-animation: Gradient 15s ease infinite;
+  animation: Gradient 15s ease infinite;
+
+
+  ion-icon {
+    font-size: 150px;
+    color: white;
+  }
+
+  ion-input {
+    color: white;
+    width: 70%;
+  }
+
+  p, a {
+    color: white;
+  }
+
+  ion-content > div {
+    margin-top: 60px;
+  }
+
+  ion-input {
+    margin-bottom: 15px !important;
+    border-radius: 20px !important;
+    background: rgba(240, 240, 240, .3) !important;
+    -webkit-transition: all .5s ease !important;
+    -moz-transition: all .5s ease !important;
+    -ms-transition: all .5s ease !important;
+    -o-transition: all .5s ease !important;
+    transition: all .5s ease !important;
+  }
+}

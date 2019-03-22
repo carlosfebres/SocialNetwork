@@ -1,0 +1,11 @@
+<ion-content padding>
+	<div align="center" *ngIf="load">
+		<ion-icon name="chatboxes" stlye="font-size: 130px;"></ion-icon>
+		<p>An SMS have been sent to {{mobileFormat(userService.user.mobile)}}, please enter the code below</p>
+		<ion-input type="number" placeholder="Verification Code.." maxlength="6" [(ngModel)]="code"></ion-input>
+		<ion-button type="submit" shape="round" color="light" (click)="verify()">Verify</ion-button>
+		<div margin-top="30">
+			<a (click)="resend()">Resend Code.</a>
+		</div>
+	</div>
+</ion-content>
