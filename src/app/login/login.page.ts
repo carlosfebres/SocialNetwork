@@ -1,10 +1,13 @@
-import {Component} from '@angular/core';
-import {ToastController} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
+import {ModalController, ToastController} from '@ionic/angular';
 import {UserService} from '../services/user.service';
-import {SMS} from '@ionic-native/sms';
-import {FingerprintAIO} from '@ionic-native/fingerprint-aio/ngx';
-import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Router} from '@angular/router';
+import {ConfigPage} from '../config/config.page';
+import {SmsService} from '../services/sms.service';
+import {FingerprintAuthService} from '../services/fingerprint-auth.service';
+import {of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {User} from '../user/user-page/user.page';
 
 
 @Component({
@@ -12,29 +15,38 @@ import {Router} from '@angular/router';
     templateUrl: 'login.page.html',
     styleUrls: ['./login.page.scss']
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
 
-    public email = 'carlosfebres97@hotmail.com';
-    public password = '12312312';
+    public email = '';
+    public password = '';
     public name = '';
     public username = '';
+    public mobile = '';
+    public mobileExt = 412;
 
     public loginForm = true;
     public error = 'init';
 
     constructor(
         private router: Router,
-        public userProvider: UserService,
+        public userService: UserService,
         public toastController: ToastController,
-        public fingerprint: FingerprintAIO,
-        private sms: SMS,
-        private androidPermissions: AndroidPermissions
+        private modalController: ModalController,
+        private smsService: SmsService,
+        private fingerprintAuthService: FingerprintAuthService
     ) {
     }
 
-    change() {
-        this.sendSMS();
-        this.loginForm = !this.loginForm;
+    ngOnInit() {
+        this.fingerprint();
+    }
+
+    setExt(ext) {
+        this.mobileExt = ext;
+    }
+
+    fingerprint() {
+        this.fingerprintAuthService.forLogging().toPromise().then(() => this.router.navigate(['tabs/dashboard']));
     }
 
     execute() {
@@ -47,36 +59,45 @@ export class LoginPage {
     }
 
     toast(...messages) {
-        messages.forEach(message => {
+        messages.forEach((message, index) => {
             console.log(message);
             if (typeof message !== 'string') {
                 message = JSON.stringify(message);
             }
             this.toastController.create({
                 message,
-                duration: 1000
+                duration: 2000 * (messages.length - index)
             }).then(toast => toast.present());
         });
     }
 
-    private async fingerprintTest() {
-        console.log(this.fingerprint);
-        const available = await this.fingerprint.isAvailable();
-        if (available === 'OK') {
-            this.fingerprint.show({
-                clientId: 'twitter-app'
-            });
-        } else {
-            alert('Fingerprint Sensor no available');
-        }
-    }
-
     private login() {
-        this.userProvider.login(this.email, this.password).subscribe(
-            user => {
-                this.router.navigate(['/tabs']);
+        this.userService.login(this.email, this.password).subscribe(
+            (user: User) => {
+                this.fingerprintAuthService.isAvailable().subscribe(isAvailable => {
+                    let next$;
+                    console.log('Available ', isAvailable);
+                    if (isAvailable) {
+                        next$ = this.fingerprintAuthService.storeAuth(this.email, this.password)
+                            .pipe(catchError(() => of(null)));
+                    } else {
+                        next$ = of(null);
+                    }
+                    next$.subscribe(
+                        () => {
+                            if (user.mobileVerified) {
+                                this.router.navigate(['tabs/dashboard']);
+                            } else {
+                                this.router.navigate(['verification']);
+                            }
+                        }, error => {
+                            console.error(error);
+                        }
+                    );
+                });
             },
             error => {
+                error = error.error.error;
                 if (error === 'Invalid Input') {
                     error = 'Fill all inputs.';
                     this.error = 'input';
@@ -84,17 +105,19 @@ export class LoginPage {
                     this.error = 'password';
                 } else if (error === 'User not found') {
                     this.error = 'email';
+                } else {
+                    error = 'Couldn\'t reach server...';
                 }
                 this.toastController.create({
                     message: error,
-                    duration: 3000
+                    duration: 2000
                 }).then(toast => toast.present());
             }
         );
     }
 
     private signup() {
-        if (!this.error || !this.password || !this.name || !this.username) {
+        if (!this.error || !this.password || !this.name || !this.username || !this.mobile) {
             this.error = 'input';
             this.toastController.create({
                 message: 'Fill all inputs.',
@@ -102,14 +125,15 @@ export class LoginPage {
             }).then(toast => toast.present());
             return;
         }
-        this.userProvider.signup({
+        this.userService.signup({
             email: this.email,
             password: this.password,
             name: this.name,
             username: this.username.toLowerCase(),
+            mobile: String(this.mobileExt) + this.mobile,
             provider: 'local'
         }).subscribe(
-            user => {
+            () => {
                 this.login();
             }, error => {
                 console.log(error);
@@ -126,23 +150,20 @@ export class LoginPage {
                         message: msg,
                         duration: 3000
                     }).then(toast => toast.present());
+                } else {
+                    this.toastController.create({
+                        message: 'Couldn\'t reach server...',
+                        duration: 2000
+                    }).then(toast => toast.present());
                 }
             }
         );
     }
 
-    private async sendSMS() {
-
-        const hasPermission = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS);
-        console.log(hasPermission);
-
-        const requestPermission = await this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS);
-        console.log(requestPermission);
-
-        this.sms.send('4126528445', 'Test SMS.').then(data => {
-            this.toast('Message Sent.', data);
-        }).catch(error => {
-            this.toast('Message Error.', error);
+    async config() {
+        const modal = await this.modalController.create({
+            component: ConfigPage
         });
+        modal.present();
     }
 }

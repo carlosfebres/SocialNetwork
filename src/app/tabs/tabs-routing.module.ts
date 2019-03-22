@@ -9,30 +9,44 @@ const routes: Routes = [
         children: [
             {
                 path: 'dashboard',
-                outlet: 'dashboard-tab',
-                loadChildren: './home/home.module#HomeModule'
+                children: [
+                    {path: '', loadChildren: '../home/home.module#HomeModule'}
+                ]
             },
             {
                 path: 'profile',
-                outlet: 'profile-tab',
-                loadChildren: './user/user.module#UserModule'
+                children: [
+                    {path: '', loadChildren: '../user/user-page/user.module#UserModule'},
+                    {path: 'edit', loadChildren: '../user/user-info/user-info.module#UserInfoModule'}
+                ]
             },
             {
-                path: 'user/search',
-                outlet: 'search-tab',
-                loadChildren: './user/search-users/search-users.module#SearchUsersModule'
+                path: 'search',
+                children: [
+                    {path: '', loadChildren: '../user/search-users/search-users.module#SearchUsersModule'}
+                ]
             },
             {
-                path: 'chats',
-                outlet: 'chats-tab',
-                loadChildren: './chat/chat-list/chat-list.module#ChatsListModule'
+                path: 'chat',
+                children: [
+                    {path: '', loadChildren: '../chat/chat.module#ChatModule'}
+                ]
+            }, {
+                path: 'user',
+                loadChildren: '../user/user-routing.module#UserRoutingModule'
+            },
+
+            {
+                path: '',
+                redirectTo: 'tabs/dashboard',
+                pathMatch: 'full'
             }
         ]
     },
     {
         path: '',
-        redirectTo: '/tabs/(dashboard-tab:dashboard)',
-        pathMatch: 'full'
+        pathMatch: 'full',
+        redirectTo: 'tabs/dashboard'
     }
 ];
 

@@ -1,19 +1,21 @@
 import {NgModule} from '@angular/core';
-import {NewChatPage} from './new-chat.page';
+import {UploadPicturePage} from './upload-picture-page.component';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
-import {UserItemModule} from '../../user/user-item/user-item.module';
 
 @NgModule({
-    declarations: [NewChatPage],
-    entryComponents: [NewChatPage],
+    declarations: [
+        UploadPicturePage,
+    ],
     imports: [
         CommonModule,
-        FormsModule,
         IonicModule,
-        UserItemModule
+        FormsModule
     ],
+    entryComponents: [
+        UploadPicturePage
+    ]
 })
-export class NewChatModule {
+export class UploadPictureModule {
 }

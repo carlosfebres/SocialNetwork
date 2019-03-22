@@ -3,25 +3,35 @@ import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
+import {IonicStorageModule} from '@ionic/storage';
 import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
-import {PipesModulePipe} from './pipes/pipes.module.pipe';
+import {PipesModule} from './pipes/pipes.module';
+import {HttpClientModule} from '@angular/common/http';
+import {AndroidPermissions} from '@ionic-native/android-permissions/ngx';
+import {SMS} from '@ionic-native/sms/ngx';
+import {AndroidFingerprintAuth} from '@ionic-native/android-fingerprint-auth/ngx';
 
 @NgModule({
     declarations: [AppComponent],
     entryComponents: [],
     imports: [
         BrowserModule,
-        PipesModulePipe,
+        PipesModule,
+        HttpClientModule,
         IonicModule.forRoot(),
+        IonicStorageModule.forRoot(),
         AppRoutingModule
     ],
     providers: [
         StatusBar,
         SplashScreen,
+        AndroidFingerprintAuth,
+        SMS,
+        AndroidPermissions,
         {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
     ],
     bootstrap: [AppComponent]

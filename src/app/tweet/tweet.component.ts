@@ -2,8 +2,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {HelperService} from '../services/helper.service';
 import {ActionSheetController, AlertController, ModalController, ToastController} from '@ionic/angular';
-import {TweetService} from '../services/tweets.service';
+import {Tweet, TweetService} from '../services/tweets.service';
 import {SocialSharing} from '@ionic-native/social-sharing/ngx';
+import {Router} from '@angular/router';
+import {CommentsPage} from './comments/comments.page';
+import {User} from '../user/user-page/user.page';
 
 
 @Component({
@@ -13,14 +16,13 @@ import {SocialSharing} from '@ionic-native/social-sharing/ngx';
 })
 export class TweetComponent implements OnInit {
 
-    @Input() data: any = {
-        favorites: []
-    };
+    @Input() tweet: Tweet;
+    @Input() tweets: Tweet[];
     liked = false;
     mine = false;
-    @Input() tweets: Array<any>;
 
     constructor(
+        public router: Router,
         public modalController: ModalController,
         public userProvider: UserService,
         public tweetService: TweetService,
@@ -33,23 +35,19 @@ export class TweetComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.liked = this.data.favorites.indexOf(this.userProvider.user._id) >= 0;
-        this.mine = this.data.user._id === this.userProvider.user._id;
+        this.liked = this.tweet.favorites.indexOf(this.userProvider.user._id) >= 0;
+        this.mine = this.tweet.user._id === this.userProvider.user._id;
     }
 
-    // goToUserDetail(user) {
-    //     this.userProvider.getUser(user._id).subscribe(
-    //         (data: any) => {
-    //             this.navController.push(UserPage, {
-    //                 user: data.user
-    //             });
-    //         }
-    //     );
-    // }
+    goToUserDetail(user: User) {
+        if (user._id !== this.userProvider.user._id) {
+            this.router.navigate(['tabs/user', user.username]);
+        }
+    }
 
     async share() {
         const actionSheet = await this.actionSheetCtrl.create({
-            title: 'Comment',
+            header: 'Comment',
             buttons: [
                 {
                     text: 'Twitter',
@@ -77,10 +75,10 @@ export class TweetComponent implements OnInit {
 
     private shareVia(app: string) {
         let image = null;
-        if (this.data.image) {
-            image = this.helper.getUrl(this.data.image);
+        if (this.tweet.image) {
+            image = this.helper.getUrl(this.tweet.image);
         }
-        this.socialSharing.shareVia(app, this.data.body, null, image).catch(() => {
+        this.socialSharing.shareVia(app, this.tweet.body, null, image).catch(() => {
             this.toastController.create({
                 message: 'Can\'t Share Via ' + app,
                 duration: 3000
@@ -88,15 +86,15 @@ export class TweetComponent implements OnInit {
         });
     }
 
-    // async comment() {
-    //     const modal = await this.modalController.create({
-    //         component: CommentsPage,
-    //         componentProps: {
-    //             tweet: this.data
-    //         }
-    //     });
-    //     return await modal.present();
-    // }
+    async comment() {
+        const modal = await this.modalController.create({
+            component: CommentsPage,
+            componentProps: {
+                tweet: this.tweet
+            }
+        });
+        return await modal.present();
+    }
 
     manageLike() {
         if (this.liked) {
@@ -107,27 +105,27 @@ export class TweetComponent implements OnInit {
     }
 
     private unlike() {
-        this.tweetService.unlike(this.data._id).subscribe(
+        this.tweetService.unlike(this.tweet._id).subscribe(
             res => {
                 this.liked = false;
-                const index = this.data.favorites.indexOf(this.userProvider.user._id);
-                this.data.favorites.splice(index, 1);
+                const index = this.tweet.favorites.indexOf(this.userProvider.user._id);
+                this.tweet.favorites.splice(index, 1);
             }
         );
     }
 
     private like() {
-        this.tweetService.like(this.data._id).subscribe(
+        this.tweetService.like(this.tweet._id).subscribe(
             res => {
                 this.liked = true;
-                this.data.favorites.push(this.userProvider.user._id);
+                this.tweet.favorites.push(this.userProvider.user._id);
             }
         );
     }
 
     removeTweet() {
         this.alertController.create({
-            title: 'Delete Tweet',
+            header: 'Delete Tweet',
             message: 'Are you sure you want to delete this tweet?',
             buttons: [
                 {
@@ -136,9 +134,9 @@ export class TweetComponent implements OnInit {
                 {
                     text: 'Yes',
                     handler: () => {
-                        this.tweetService.deleteTweet(this.data).subscribe(res => {
+                        this.tweetService.deleteTweet(this.tweet).subscribe(res => {
                             if (this.tweets) {
-                                const index = this.tweets.indexOf(this.data);
+                                const index = this.tweets.indexOf(this.tweet);
                                 if (index >= 0) {
                                     this.tweets.splice(index, 1);
                                 }

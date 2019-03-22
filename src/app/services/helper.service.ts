@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {Storage} from '@ionic/storage';
 
 
 @Injectable({
@@ -6,10 +7,38 @@ import {Injectable} from '@angular/core';
 })
 export class HelperService {
 
-    static readonly base_url: string = 'http://192.168.43.7:3000/';
+    serverAddress = '192.168.43.7';
+    serverPort = 3000;
+
+    constructor(
+        private storage: Storage
+    ) {
+        storage.get('serverAddress').then(
+            address => {
+                if (address) {
+                    this.serverAddress = address;
+                }
+            }
+        );
+        storage.get('serverPort').then(
+            port => {
+                if (port) {
+                    this.serverPort = +port;
+                }
+            }
+        );
+    }
 
     public getUrl(path) {
-        return HelperService.base_url + path;
+        return `http://${this.serverAddress}:${this.serverPort}/` + path;
+    }
+
+    profileImage(profileImage: string): any {
+        if (profileImage) {
+            return this.getUrl(profileImage);
+        } else {
+            return 'assets/imgs/img_avatar.png';
+        }
     }
 
 }

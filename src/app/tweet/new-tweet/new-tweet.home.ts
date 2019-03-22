@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {LoadingController, ToastController} from '@ionic/angular';
+import {LoadingController, ModalController, ToastController} from '@ionic/angular';
 import {UserService} from '../../services/user.service';
 import {TweetService} from '../../services/tweets.service';
 
@@ -15,7 +15,8 @@ export class NewTweetPage {
         public userService: UserService,
         public tweetService: TweetService,
         public toastCtrl: ToastController,
-        public loadingCtrl: LoadingController
+        public loadingCtrl: LoadingController,
+        public modalController: ModalController
     ) {
     }
 
@@ -34,7 +35,7 @@ export class NewTweetPage {
                         message: 'Tweet Created',
                         duration: 3000
                     }).then(toast => toast.present());
-                    this.close();
+                    this.modalController.dismiss(true);
                 },
                 (err) => {
                     console.log(err);
@@ -51,6 +52,10 @@ export class NewTweetPage {
                 duration: 3000
             }).then(toast => toast.present());
         }
+    }
+
+    close() {
+        this.modalController.dismiss();
     }
 
     onFileChanged(fileInput: any) {

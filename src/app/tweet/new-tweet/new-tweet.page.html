@@ -1,12 +1,12 @@
-<ion-header transparent>
-	<ion-navbar color="primary">
-		<ion-buttons start>
-			<button ion-button icon-only (click)="close()">
-				<ion-icon name="close"></ion-icon>
-			</button>
+<ion-header>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-button (click)="close()">
+				<ion-icon name="close" slot="icon-only"></ion-icon>
+			</ion-button>
 		</ion-buttons>
 		<ion-title>New Tweet</ion-title>
-	</ion-navbar>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content padding>
@@ -20,16 +20,16 @@
 
 <ion-footer>
 	<ion-toolbar>
-		<button ion-button icon-only (click)="file.click()">
-			<ion-icon name="image"></ion-icon>
-		</button>
+		<ion-button (click)="file.click()">
+			<ion-icon name="image" slot="icon-only"></ion-icon>
+		</ion-button>
 		<input type="file" style="display: none;" accept="image/*" (change)="onFileChanged(file)" #file>
 
-		<ion-buttons end>
-			<button ion-button icon-end color="royal" (click)="send()">
+		<ion-buttons slot="end">
+			<ion-button color="royal" (click)="send()" type="submit">
 				Tweet
-				<ion-icon name="send"></ion-icon>
-			</button>
+				<ion-icon name="send" slot="end"></ion-icon>
+			</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 </ion-footer>

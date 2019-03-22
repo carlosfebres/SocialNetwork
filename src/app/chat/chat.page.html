@@ -1,56 +1,56 @@
-<ion-header>
-	<ion-navbar color="primary">
-		<ion-buttons end>
-			<button ion-button icon-only (click)="close()">
-				<ion-icon name="close"></ion-icon>
-			</button>
+<ion-header *ngIf="(chat$ | async) as chat">
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-back-button [defaultHref]="tabs/chat/list"></ion-back-button>
 		</ion-buttons>
-		<div class="flex-title">
-			<div>
-				<ion-avatar>
-					<img [src]="chat.user1.profileImage?helper.getUrl(chat.user1.profileImage):'assets/imgs/img_avatar.png'">
-				</ion-avatar>
-			</div>
-			<ion-title>
-				@{{chat.user1.username}}
-			</ion-title>
-		</div>
-	</ion-navbar>
+		<ion-avatar slot="start">
+			<img [src]="helper.profileImage(chat.user1.profileImage)">
+		</ion-avatar>
+		<ion-title style="padding: 3px 0 3px 16px;">
+			{{chat.user1.name}}
+			<br/>
+			<ion-note color="light">@{{chat.user1.username}}</ion-note>
+		</ion-title>
+	</ion-toolbar>
 </ion-header>
 
-<ion-content padding="3">
+<ion-content *ngIf="(chat$ | async) as chat">
 
 	<ion-refresher (ionRefresh)="refresh($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
 
-	<h5 style="margin-top: 40px; text-align: center; color: rgb(170,170,170);" *ngIf="!chat.messages.length">NO MESSAGES</h5>
-	<ion-list no-lines>
-		<ion-item *ngFor="let message of chat.messages" [class.my-message]="userService.user._id == message.sentBy">
-			<ion-avatar item-start>
-				<img [src]="getUserImage(message)">
-			</ion-avatar>
-			<p *ngIf="message.type != 'image'">{{message.message}}</p>
-			<img *ngIf="message.type == 'image'" src="{{message.message | url}}" alt="">
-			<div align="right">
-				<ion-note>{{message.sentAt | fromNow}}</ion-note>
-			</div>
+	<h5 style="margin-top: 40px; text-align: center; color: rgb(170,170,170);" *ngIf="!chat.messages.length">NO
+		MESSAGES</h5>
+	<ion-list lines="none">
+		<ion-item *ngFor="let message of chat.messages" [class.my-message]="userService.user._id === message.sentBy"
+				  [class.other-message]="userService.user._id !== message.sentBy">
+			<ion-item class="chat" slot="{{userService.user._id == message.sentBy?'end':'start'}}">
+				<ion-avatar slot="start">
+					<img [src]="getUserImage(chat, message)">
+				</ion-avatar>
+				<img class="message-img" *ngIf="message.type == 'image'" [src]="helper.getUrl(message.message)" alt="">
+				<ion-text text-wrap>
+					<p *ngIf="message.type != 'image'">{{message.message}}</p>
+					<ion-note>{{message.sentAt | fromNow}}</ion-note>
+				</ion-text>
+			</ion-item>
 		</ion-item>
 	</ion-list>
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="(chat$ | async) as chat">
 	<ion-toolbar>
 		<ion-input type="text" placeholder="Message..." [(ngModel)]="message"></ion-input>
-		<ion-buttons start *ngIf="!message.trim().length">
-			<button ion-button icon-only (click)="sendImage()">
-				<ion-icon name="image"></ion-icon>
-			</button>
+		<ion-buttons slot="start" *ngIf="!message.trim().length">
+			<ion-button (click)="sendImage(chat)">
+				<ion-icon name="image" slot="icon-only"></ion-icon>
+			</ion-button>
 		</ion-buttons>
-		<ion-buttons end *ngIf="message.trim().length">
-			<button ion-button icon-only color="royal" (click)="sendMessage()">
-				<ion-icon name="send"></ion-icon>
-			</button>
+		<ion-buttons slot="end" *ngIf="message.trim().length">
+			<ion-button color="royal" (click)="sendMessage(chat)">
+				<ion-icon name="send" slot="icon-only"></ion-icon>
+			</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 </ion-footer>

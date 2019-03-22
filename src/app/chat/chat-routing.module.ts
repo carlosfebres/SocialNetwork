@@ -3,10 +3,9 @@ import {RouterModule, Routes} from '@angular/router';
 import {ChatPage} from './chat.page';
 
 const routes: Routes = [
-    {path: '', redirectTo: 'list', pathMatch: 'full'},
-    {path: ':username', component: ChatPage},
-    {path: 'list', loadChildren: './chat/chat-list/chat-list.module#ChatsListModule'},
-    {path: 'new', loadChildren: './chat/new-chat/new-chat.module#NewChatModule'}
+    {path: 'list', loadChildren: './chats-list/chats-list.module#ChatsListModule'},
+    {path: 'user/:username', component: ChatPage},
+    {path: '', redirectTo: 'list', pathMatch: 'full'}
 ];
 
 @NgModule({

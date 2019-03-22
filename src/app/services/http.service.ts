@@ -23,14 +23,19 @@ export class HttpService {
 
     defaultHeaders: any = {};
 
-
-    constructor(public http: HttpClient, public helper: HelperService) {
-        console.log('Hello HttpProvider Provider');
-
+    constructor(
+        public http: HttpClient,
+        public helper: HelperService
+    ) {
     }
 
     setToken(token: String) {
+        console.log(token);
         this.defaultHeaders.Authorization = 'Bearer ' + token;
+    }
+
+    getToken() {
+        return this.defaultHeaders.Authorization;
     }
 
     removeToken() {

@@ -1,39 +1,40 @@
 <ion-header>
-	<ion-navbar color="primary">
-		<ion-buttons end>
-			<button ion-button icon-only (click)="close()">
-				<ion-icon name="close"></ion-icon>
-			</button>
-		</ion-buttons>
+	<ion-toolbar color="primary">
 		<ion-title>
-			<ion-icon name="text"></ion-icon>
+			<ion-icon slot="start" name="text"></ion-icon>
 			Comments
 		</ion-title>
-	</ion-navbar>
+		<ion-buttons slot="end">
+			<ion-button (click)="close()">
+				<ion-icon slot="icon-only" name="close"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-	<h5 style="margin-top: 40px; text-align: center; color: rgb(170,170,170);" *ngIf="!tweet.comments.length">NO
-		COMMENTS</h5>
+	<h5 style="margin-top: 40px; text-align: center; color: rgb(170,170,170);" *ngIf="!tweet.comments.length">NO COMMENTS</h5>
 	<ion-list>
-		<button ion-item *ngFor="let comment of tweet.comments" (click)="showOptions(comment)">
-			<ion-avatar item-start>
-				<img [src]="comment.user.profileImage?helper.getUrl(comment.user.profileImage):'assets/imgs/img_avatar.png'">
+		<ion-item *ngFor="let comment of tweet.comments" (click)="showOptions(comment)">
+			<ion-avatar slot="start">
+				<img [src]="helper.profileImage(comment.user.profileImage)">
 			</ion-avatar>
-			<h2>{{comment.user.name}}</h2>
-			<p>{{comment.body}}</p>
-		</button>
+			<ion-label text-wrap>
+				<h2>{{comment.user.name}}</h2>
+				<p>{{comment.body}}</p>
+			</ion-label>
+		</ion-item>
 	</ion-list>
 </ion-content>
 
 <ion-footer>
 	<ion-toolbar>
 		<ion-input type="text" placeholder="Comment Something..." [(ngModel)]="comment"></ion-input>
-		<ion-buttons end *ngIf="comment.trim().length">
-			<button ion-button icon-end color="royal" (click)="send()">
+		<ion-buttons slot="end" *ngIf="comment.trim().length">
+			<ion-button color="royal" (click)="send()">
 				Comments
-				<ion-icon name="send"></ion-icon>
-			</button>
+				<ion-icon slot="end" name="send"></ion-icon>
+			</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 </ion-footer>

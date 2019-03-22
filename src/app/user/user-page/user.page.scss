@@ -6,10 +6,9 @@
   ion-col div {
     text-align: center;
   }
-  .follow button[ion-item] {
-    padding: 0;
-    background-color: rgba(240,240,240,.8) !important;
-    border-radius: 10px;
+  .follow h2 {
+    font-size: 36px;
+    font-weight: bold;
   }
   .profile-background {
     background: radial-gradient(#aefff8, #1b94e0) !important;
@@ -19,7 +18,7 @@
     display: flex;
     flex-direction: row;
 
-    button {
+    ion-button {
       width: 50%;
     }
   }
@@ -31,7 +30,6 @@
     }
 
     div {
-      width: 50%;
       display: inline-block;
       position: relative;
 
@@ -45,12 +43,10 @@
         margin-top: 20px;
       }
 
-      button {
+      ion-button {
         position: absolute;
-        top: 5%;
-        left: 80%;
-        height: 20%;
-        width: 20%;
+        top: 10%;
+        left: 70%;
       }
     }
     h2, p {

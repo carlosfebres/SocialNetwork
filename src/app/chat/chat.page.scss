@@ -1,7 +1,54 @@
 :host {
-  .my-message {
-    background-color: rgba(150,150,150,.1) !important;
+
+  ion-content {
+    --padding-start: 5px;
+    --padding-end: 5px;
+
+    ion-avatar {
+      height: 20px;
+      width: 20px;
+    }
+
+    ion-label {
+      line-height: initial;
+      margin: 2px 0;
+    }
   }
+
+  ion-header {
+    ion-avatar {
+      height: 40px;
+      width: 40px;
+    }
+  }
+
+  .my-message, .other-message {
+    margin-top: 10px;
+  }
+
+  .chat {
+    width: 80%;
+    --background: rgba(150,150,150,.2) !important;
+    margin: 4px;
+
+    ion-text p {
+      margin: 2px;
+    }
+
+    .message-img {
+      margin: 10px 0;
+    }
+  }
+  .my-message + .my-message, .other-message + .other-message {
+    margin-top: 0;
+    top: -4px;
+
+    ion-avatar {
+      visibility: hidden;
+    }
+  }
+
+
   ion-item {
     border-radius: 10px;
     overflow: hidden;
@@ -11,13 +58,5 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-
-
-    ion-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      overflow: hidden;
-    }
   }
 }

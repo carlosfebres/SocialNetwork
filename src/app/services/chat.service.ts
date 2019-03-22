@@ -3,7 +3,7 @@ import {HttpService} from './http.service';
 import {UserService} from './user.service';
 import {Observable, of} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {User} from '../user/user.page';
+import {User} from '../user/user-page/user.page';
 
 export interface Chat {
     _id?: string;
@@ -23,9 +23,9 @@ export interface Chat {
 export class ChatService {
 
     public chats: Chat[] = [];
-    public chats$: Observable<Chat[]> = this.http.get<Chat[]>('chats')
+    public chats$: Observable<Chat[]> = this.http.get('chats')
         .pipe(
-            map(response => response.chats),
+            map((response: any) => response.chats),
             tap(chats => this.chats = chats)
         );
 
@@ -61,9 +61,9 @@ export class ChatService {
 
     refreshChat(chat: Chat): Observable<Chat> {
         console.log('Refreshing...');
-        return this.http.get<Chat>(`chat/${chat._id}`)
+        return this.http.get(`chat/${chat._id}`)
             .pipe(
-                map(response => response.chat),
+                map((response: any) => response.chat),
                 tap((refreshedChat: Chat) => chat.messages = refreshedChat.messages)
             );
     }
@@ -71,17 +71,17 @@ export class ChatService {
     sendMessageImage(chat: Chat, image: File) {
         const formData = new FormData();
         formData.append('message', image, image.name);
-        return this.http.post<Chat>(`message/${chat.user1._id}`, formData)
+        return this.http.post(`message/${chat.user1._id}`, formData)
             .pipe(
-                map(response => response.chat),
+                map((response: any) => response.chat),
                 tap(refreshedChat => this.handleSentSuccessful(chat, refreshedChat))
             );
     }
 
     sendMessage(chat: Chat, message: string): Observable<Chat> {
-        return this.http.post<Chat>(`message/${chat.user1._id}`, {message})
+        return this.http.post(`message/${chat.user1._id}`, {message})
             .pipe(
-                map(response => response.chat),
+                map((response: any) => response.chat),
                 tap(refreshedChat => this.handleSentSuccessful(chat, refreshedChat))
             );
     }

@@ -1,42 +1,46 @@
 <ion-card>
 
-	<user-item [user]="data.user" [background]="true" (click)="goToUserDetail(data.user)"></user-item>
-
-	<img *ngIf="data.image" src="{{data.image | url}}">
+	<user-item [user]="tweet.user" [background]="true" (click)="goToUserDetail(tweet.user)"></user-item>
+	<hr />
+	<div class="tweet-image" *ngIf="tweet.image">
+		<img [src]="helper.getUrl(tweet.image)">
+	</div>
 
 	<ion-card-content>
-		<p>{{data.body}}</p>
+		<p>{{tweet.body}}</p>
 	</ion-card-content>
 	<ion-row>
-		<ion-col offset-1 col-3>
-			<ion-note>
-				{{data.createdAt | fromNow}} ago
-			</ion-note>
+		<ion-col offset="1" size="3" align-self-center>
+			<div padding-vertical="3">
+				<ion-note>
+					{{tweet.createdAt | fromNow}} ago
+				</ion-note>
+			</div>
 		</ion-col>
-		<ion-col col-3 offset-5 align="center" *ngIf="mine">
-			<button ion-button icon-only clear color="danger" small block (click)="removeTweet()">
-				<ion-icon name="trash"></ion-icon>
-			</button>
+		<ion-col size="3" offset="5" align="center" *ngIf="mine">
+			<ion-button fill="clear" size="small" expand="block" color="danger" (click)="removeTweet()">
+				<ion-icon slot="icon-only" name="trash"></ion-icon>
+			</ion-button>
 		</ion-col>
 	</ion-row>
-	<ion-row>
-		<ion-col col-4 align="center">
-			<button ion-button clear icon-start small (click)="manageLike();" [class.liked]="liked">
-				<ion-icon name="thumbs-up"></ion-icon>
-				<div>{{data.favorites.length}} LIKES</div>
-			</button>
+	<ion-row class="top-line">
+		<ion-col size="4">
+			<ion-button fill="clear" expand="full" size="small" (click)="manageLike();" [class.liked]="liked">
+				<ion-icon slot="start" name="thumbs-up"></ion-icon>
+				<div>{{tweet.favorites.length}} LIKES</div>
+			</ion-button>
 		</ion-col>
-		<ion-col col-4 align="center">
-			<button ion-button icon-start clear small (click)="comment()">
-				<ion-icon name="text"></ion-icon>
-				<div>{{data.comments.length}} COMMENTS</div>
-			</button>
+		<ion-col size="4">
+			<ion-button fill="clear" expand="full" size="small" (click)="comment()">
+				<ion-icon slot="start" name="text"></ion-icon>
+				<div>{{tweet.comments.length}}</div>
+			</ion-button>
 		</ion-col>
-		<ion-col col-4 *ngIf="!mine" style="align-self:center;">
-			<button ion-button icon-start clear small (click)="share()">
-				<ion-icon name="share"></ion-icon>
+		<ion-col size="4">
+			<ion-button fill="clear" expand="full" size="small" (click)="share()">
+				<ion-icon slot="start" name="share"></ion-icon>
 				<div>SHARE</div>
-			</button>
+			</ion-button>
 		</ion-col>
 	</ion-row>
 </ion-card>

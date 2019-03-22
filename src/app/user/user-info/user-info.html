@@ -1,23 +1,26 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <ion-title>My Data</ion-title>
-  </ion-navbar>
+	<ion-toolbar color="primary">
+		<ion-buttons slot="start">
+			<ion-back-button></ion-back-button>
+		</ion-buttons>
+		<ion-title>My Data</ion-title>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-list>
-    <ion-item>
-      <ion-label>Name: </ion-label>
-      <ion-input type="text" [(ngModel)]="data.name"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Email: </ion-label>
-      <ion-input type="text" [(ngModel)]="data.email"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Username: </ion-label>
-      <ion-input type="text" [(ngModel)]="data.username"></ion-input>
-    </ion-item>
-  </ion-list>
-  <button ion-button block round (click)="update()">Update</button>
+	<ion-list>
+		<ion-item>
+			<ion-label>Name</ion-label>
+			<ion-input [(ngModel)]="data.name"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label>Email</ion-label>
+			<ion-input type="email" [(ngModel)]="data.email"></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-label>Username</ion-label>
+			<ion-input [(ngModel)]="data.username"></ion-input>
+		</ion-item>
+	</ion-list>
+	<ion-button expand="block" shape="round" (click)="update()">Update</ion-button>
 </ion-content>

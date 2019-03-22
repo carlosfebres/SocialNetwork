@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {ActionSheetController} from '@ionic/angular';
+import {Component} from '@angular/core';
+import {ActionSheetController, ModalController, NavParams} from '@ionic/angular';
 import {UserService} from '../../services/user.service';
 import {HelperService} from '../../services/helper.service';
 import {Tweet, TweetService} from '../../services/tweets.service';
@@ -13,16 +13,22 @@ import {Router} from '@angular/router';
 })
 export class CommentsPage {
 
-    @Input() public tweet: Tweet;
+    public tweet: Tweet;
     public comment = '';
 
     constructor(
         private router: Router,
+        private navParams: NavParams,
         public userService: UserService,
         public tweetService: TweetService,
         public actionSheetController: ActionSheetController,
-        public helper: HelperService
+        public helper: HelperService,
+        public modalController: ModalController
     ) {
+    }
+
+    ionViewWillEnter() {
+        this.tweet = this.navParams.get('tweet');
     }
 
     send() {
@@ -40,6 +46,7 @@ export class CommentsPage {
             {
                 text: 'Go To Profile',
                 handler: () => {
+                    this.close();
                     this.router.navigate([`/user/${comment.user.username}`]);
                 }
             }, {
@@ -48,21 +55,26 @@ export class CommentsPage {
             }
         ];
 
-        if (comment.user === this.userService.user._id || this.tweet.user._id === this.userService.user._id) {
+        if (comment.user._id === this.userService.user._id || this.tweet.user._id === this.userService.user._id) {
             buttons.push({
                 text: 'Delete Comment',
-                role: 'destructive'
+                handler: () => {
+                    this.deleteComment(comment);
+                }
             });
         }
 
         const actionSheet = await this.actionSheetController.create({
-            title: 'Comment',
+            header: 'Comment',
             buttons
         });
         await actionSheet.present();
     }
 
-    // TODO Use Method
+    close() {
+        this.modalController.dismiss();
+    }
+
     private deleteComment(comment: any) {
         this.tweetService.deleteComment(this.tweet._id, comment._id).subscribe(
             () => {

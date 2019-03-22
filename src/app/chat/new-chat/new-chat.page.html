@@ -1,25 +1,20 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-searchbar animated placeholder="Search User" (ionInput)="search($event)" #searchInput></ion-searchbar>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="close()">
-        <ion-icon name="close"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-toolbar>
+	<ion-toolbar color="primary">
+		<ion-searchbar animated placeholder="Search User" (ionInput)="search($event)" #searchInput></ion-searchbar>
+		<ion-buttons slot="end">
+			<ion-button (click)="close()">
+				<ion-icon name="close" slot="icon-only"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <div *ngFor="let user of users">
-      <user-item [user]="user" *ngIf="user._id !== userService.user._id" (click)="createChat(user)"></user-item>
-    </div>
-    <h4 *ngIf="users.length == 0 && clean">Search Something...</h4>
-    <h4 *ngIf="users.length == 0 && !clean">No Results!</h4>
-  </ion-list>
-  <div class="fullscreen-center" *ngIf="loading">
-    <div align="center" style="width: 100%;">
-      <ion-spinner></ion-spinner>
-    </div>
-  </div>
+	<ion-list *ngIf="users$ | async as users">
+		<div *ngFor="let user of users">
+			<user-item [user]="user" *ngIf="user._id !== userService.user._id" (click)="goToChat(user)"></user-item>
+		</div>
+		<h4 *ngIf="users.length == 0 && clean">Search Something...</h4>
+		<h4 *ngIf="users.length == 0 && !clean">No Results!</h4>
+	</ion-list>
 </ion-content>

@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user.service';
-import {User} from '../user.page';
+import {User} from '../user-page/user.page';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {switchMap, tap} from 'rxjs/operators';
+import {switchMap, switchMapTo, tap} from 'rxjs/operators';
 
 @Component({
     selector: 'page-user-list',
@@ -13,13 +13,16 @@ import {switchMap, tap} from 'rxjs/operators';
 export class UserListPage {
 
     action: string;
-    title: string;
-    users: User[];
-    users$: Observable<User[]> = this.route.paramMap.pipe(
-        tap((params: ParamMap) => this.action = params.get('action')),
-        switchMap((params: ParamMap) => this.userProvider.getUserByUsername(params.get('username'))),
-        switchMap(user => this.userProvider.getUserList(user[this.action])),
-        tap(users => this.users = users)
+    private user: User;
+    user$: Observable<User> = this.route.paramMap
+        .pipe(
+            switchMap((params: ParamMap) => this.userProvider.getUserByUsername(params.get('username'))),
+            tap(user => this.user = user)
+        );
+    users$: Observable<User[]> = this.user$.pipe(
+        switchMapTo(this.route.data),
+        tap(routeData => this.action = routeData.action),
+        switchMap(routeData => this.userProvider.getUserList(this.user[routeData.action]))
     );
 
     constructor(
@@ -29,9 +32,8 @@ export class UserListPage {
     ) {
     }
 
-
     goToUserDetail(user: User) {
-        this.router.navigate(['user', user.username]);
+        this.router.navigate(['tabs/user', user.username]);
     }
 
 }

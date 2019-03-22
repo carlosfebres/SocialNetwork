@@ -18,5 +18,5 @@ import {LastMessageTimePipe} from './last-message-time.pipe';
         LastMessageTimePipe
     ]
 })
-export class PipesModulePipe {
+export class PipesModule {
 }

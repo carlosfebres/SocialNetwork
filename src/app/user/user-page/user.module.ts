@@ -1,20 +1,24 @@
 import {NgModule} from '@angular/core';
-import {UserInfoPage} from './user-info';
+import {UserPage} from './user.page';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
+import {TweetModule} from '../../tweet/tweet.module';
 import {RouterModule} from '@angular/router';
+import {UploadPictureModule} from '../../upload-picture/upload-picture.module';
 
 @NgModule({
     declarations: [
-        UserInfoPage,
+        UserPage
     ],
     imports: [
         CommonModule,
         FormsModule,
         IonicModule,
-        RouterModule.forChild([{path: '', component: UserInfoPage}])
+        TweetModule,
+        UploadPictureModule,
+        RouterModule.forChild([{path: '', component: UserPage}])
     ],
 })
-export class UserInfoModule {
+export class UserModule {
 }

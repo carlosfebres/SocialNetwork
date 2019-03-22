@@ -1,9 +1,34 @@
 :host {
+
+  $grey: rgba(200,200,200,.5);
+
   .liked {
     color: green;
   }
 
   ion-label {
     margin: 5px 0 !important;
+  }
+
+  ion-col {
+    padding: 0;
+
+    ion-button {
+      height: 35px;
+    }
+  }
+
+  hr {
+    background: $grey;
+  }
+
+  .tweet-image {
+    margin: 10px;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  
+  ion-card {
+    box-shadow: 0 0 10px $grey;
   }
 }

@@ -1,8 +1,8 @@
 import {NgModule} from '@angular/core';
 import {NewTweetPage} from './new-tweet.home';
+import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
-import {RouterModule} from '@angular/router';
 
 @NgModule({
     declarations: [
@@ -10,10 +10,10 @@ import {RouterModule} from '@angular/router';
     ],
     imports: [
         CommonModule,
-        IonicModule,
-        RouterModule.forChild([{path: '', component: NewTweetPage}])
+        FormsModule,
+        IonicModule
     ],
-    exports: [
+    entryComponents: [
         NewTweetPage
     ]
 })

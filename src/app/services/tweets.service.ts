@@ -1,12 +1,18 @@
 import {Injectable} from '@angular/core';
-import {User} from '../user/user.page';
+import {User} from '../user/user-page/user.page';
 import {HttpService} from './http.service';
+import {Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 
 
 export interface Tweet {
     user: User;
-    comments: Array<any>;
+    comments: any[];
     _id: string;
+    favorites?: string[];
+    body?: string;
+    image?: string;
+    createdAt: string;
 }
 
 @Injectable({
@@ -22,6 +28,14 @@ export class TweetService {
     }
 
     // TWEETS
+
+    getTweets(user: User): Observable<Tweet[]> {
+        return this.http.get(`user/${user._id}/tweets`)
+            .pipe(
+                map((response: any) => response.tweets),
+                tap((tweets: Tweet[]) => tweets.forEach((tweet: Tweet) => tweet.user = user))
+            );
+    }
 
     postTweet(text: string, img: File) {
         const formData = new FormData();

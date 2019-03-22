@@ -1,9 +1,19 @@
-page-home {
+:host {
   ion-header[transparent]::after {
     background: none !important;
   }
 
-  tweet {
-    margin-top: 10px;
+  .tweet:not(:first-of-type) {
+    margin-top: 20px;
+  }
+
+  .no-tweets {
+    margin-top: 80px;
+    text-align: center;
+    color: rgba(150,150,150,.5);
+
+    ion-icon {
+      font-size: 150px;
+    }
   }
 }

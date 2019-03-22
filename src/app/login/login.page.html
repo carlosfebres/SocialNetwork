@@ -1,40 +1,55 @@
 <ion-toolbar transparent color="transparent">
-  <ion-buttons end>
-    <button ion-button icon-only color="light">
-      <ion-icon name="cog"></ion-icon>
-    </button>
-  </ion-buttons>
+	<ion-buttons slot="end">
+		<ion-button icon-only color="light" (click)="config()">
+			<ion-icon name="cog"></ion-icon>
+		</ion-button>
+	</ion-buttons>
 </ion-toolbar>
-
 
 <ion-content padding>
 
-  <div align="center">
-    <ion-icon class="logo-icon" name="logo-twitter"></ion-icon>
-  </div>
+	<div align="center">
+		<ion-icon class="logo-icon" name="logo-twitter"></ion-icon>
+	</div>
 
-  <ion-list>
-    <ion-item *ngIf="!loginForm" [class.invalid]="(error == 'input' && !name.length)">
-      <ion-input placeholder="Name" type="text" [(ngModel)]="name"></ion-input>
-    </ion-item>
-    <ion-item [class.invalid]="(error == 'input' && !email.length) || error == 'email'">
-      <ion-input placeholder="E-Mail" type="email" required [(ngModel)]="email"></ion-input>
-    </ion-item>
-    <ion-item *ngIf="!loginForm" [class.invalid]="(error == 'input' && !username.length) || error == 'username'">
-      <ion-input placeholder="Username" type="text" [(ngModel)]="username"></ion-input>
-    </ion-item>
-    <ion-item [class.invalid]="(error == 'input' && !password.length) || error == 'password'">
-      <ion-input placeholder="Password" type="password" [(ngModel)]="password" required></ion-input>
-    </ion-item>
-  </ion-list>
+	<ion-input placeholder="Name" type="text" [(ngModel)]="name"
+			   *ngIf="!loginForm" [class.invalid]="(error == 'input' && !name.length)"></ion-input>
 
-  <div align="center">
-    <button ion-button round color="primary" (click)="execute()">{{loginForm?"Log In":"Sign Up"}}</button>
-  </div>
+	<ion-input placeholder="E-Mail" type="email" required [(ngModel)]="email"
+			   [class.invalid]="(error == 'input' && !email.length) || error == 'email'"></ion-input>
+
+	<ion-input placeholder="Username" type="text" [(ngModel)]="username"
+			   *ngIf="!loginForm"
+			   [class.invalid]="(error == 'input' && !username.length) || error == 'username'"></ion-input>
+
+	<ion-grid class="input" *ngIf="!loginForm"
+			  [class.invalid]="(error == 'input' && mobile === '') || error == 'mobile'">
+		<ion-row>
+			<ion-col size="4">
+				<ion-select color="light" value="412" (ionChange)="setExt($event.target.value)">
+					<ion-select-option value="412">0412</ion-select-option>
+					<ion-select-option value="414">0414</ion-select-option>
+					<ion-select-option value="424">0424</ion-select-option>
+					<ion-select-option value="424">0416</ion-select-option>
+				</ion-select>
+			</ion-col>
+			<ion-col size="8">
+				<ion-input placeholder="Mobile" type="number" [(ngModel)]="mobile" maxlength="7" max="9999999"></ion-input>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
+
+	<ion-input placeholder="Password" type="password" [(ngModel)]="password" required
+			   [class.invalid]="(error == 'input' && !password.length) || error == 'password'"></ion-input>
+
+	<div align="center">
+		<ion-button shape="round" type="submit" color="primary" (click)="execute()">{{loginForm?"Log In":"Sign Up"}}</ion-button>
+	</div>
 
 </ion-content>
 <ion-footer>
-  <ion-toolbar transparent>
-    <button ion-button full color="light" (click)="change()" clear>{{!loginForm?"Log In":"Sign Up"}}</button>
-  </ion-toolbar>
+	<ion-toolbar transparent>
+		<ion-button expand="full" color="light" fill="clear" (click)="loginForm = !loginForm">{{!loginForm?"Log In":"Sign Up"}}
+		</ion-button>
+	</ion-toolbar>
 </ion-footer>

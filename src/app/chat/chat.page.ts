@@ -1,11 +1,12 @@
 import {Component} from '@angular/core';
-import {ModalController} from '@ionic/angular';
+import {LoadingController, ModalController} from '@ionic/angular';
 import {UserService} from '../services/user.service';
 import {HelperService} from '../services/helper.service';
 import {Chat, ChatService} from '../services/chat.service';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
-import {merge, Observable, Subject} from 'rxjs';
-import {delay, first, repeat, share, switchMap, tap} from 'rxjs/operators';
+import {interval, merge, Observable, Subject} from 'rxjs';
+import {delay, first, share, switchMap, tap} from 'rxjs/operators';
+import {UploadPicturePage} from '../upload-picture/upload-picture-page.component';
 
 
 @Component({
@@ -22,13 +23,10 @@ export class ChatPage {
         );
     refresher$ = new Subject();
 
-    chat: any;
-    chat$: Observable<Chat> = merge(this.username$, this.refresher$)
+    chat$: Observable<Chat> = merge(this.username$, this.refresher$, interval(5000))
         .pipe(
             delay(1000),
             switchMap(() => this.chatService.getChat(this.username)),
-            delay(5000),
-            repeat(),
             share()
         );
     message = '';
@@ -36,6 +34,7 @@ export class ChatPage {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private loadingController: LoadingController,
         public modalController: ModalController,
         public helper: HelperService,
         public userService: UserService,
@@ -46,40 +45,40 @@ export class ChatPage {
     refresh(refresher) {
         console.log('Refreshing...');
         this.refresher$.next();
-        this.chat$.pipe(first()).subscribe(refresher.complete);
+        this.chat$.pipe(first()).subscribe(refresher.target.complete);
     }
 
-    // async sendImage() {
-    //     const modal = await this.modalController.create({
-    //         component: UpdatePicturePage,
-    //         componentProps: {
-    //             title: 'Send Image To @' + this.chat.user1.username,
-    //             callback: (file) => this.chatService.sendMessageImage(this.chat, file).toPromise(),
-    //         }
-    //     });
-    //     modal.present();
-    // }
+    async sendImage(chat: Chat) {
+        const modal = await this.modalController.create({
+            component: UploadPicturePage,
+            componentProps: {
+                title: 'Send Image To @' + chat.user1.username
+            }
+        });
 
-    sendMessage() {
-        this.chatService.sendMessage(this.chat, this.message).subscribe(() => {
+        modal.onDidDismiss().then(async res => {
+            const loader = await this.loadingController.create({message: 'Loading search...'});
+            loader.present();
+            this.chatService.sendMessageImage(chat, res.data).subscribe(loader.dismiss);
+        });
+
+        modal.present();
+    }
+
+    sendMessage(chat: Chat) {
+        this.chatService.sendMessage(chat, this.message).subscribe(() => {
             this.message = '';
         });
     }
 
-    getUserImage(message) {
+    getUserImage(chat: Chat, message) {
         let img;
         if (message.sentBy === this.userService.user._id) {
             img = this.userService.user.profileImage;
         } else {
-            img = this.chat.user1.profileImage;
+            img = chat.user1.profileImage;
         }
-
-        if (!img) {
-            img = 'assets/imgs/img_avatar.png';
-        } else {
-            img = this.helper.getUrl(img);
-        }
-        return img;
+        return this.helper.profileImage(img);
     }
 
 
