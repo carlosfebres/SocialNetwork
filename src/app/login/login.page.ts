@@ -54,7 +54,7 @@ export class LoginPage implements OnInit {
         if (this.loginForm) {
             this.login();
         } else {
-            this.signup();
+            this.signUp();
         }
     }
 
@@ -72,11 +72,10 @@ export class LoginPage implements OnInit {
     }
 
     private login() {
-        this.userService.login(this.email, this.password).subscribe(
+        this.userService.login(this.email.trim(), this.password).subscribe(
             (user: User) => {
                 this.fingerprintAuthService.isAvailable().subscribe(isAvailable => {
                     let next$;
-                    console.log('Available ', isAvailable);
                     if (isAvailable) {
                         next$ = this.fingerprintAuthService.storeAuth(this.email, this.password)
                             .pipe(catchError(() => of(null)));
@@ -116,7 +115,7 @@ export class LoginPage implements OnInit {
         );
     }
 
-    private signup() {
+    private signUp() {
         if (!this.error || !this.password || !this.name || !this.username || !this.mobile) {
             this.error = 'input';
             this.toastController.create({
@@ -125,20 +124,19 @@ export class LoginPage implements OnInit {
             }).then(toast => toast.present());
             return;
         }
-        this.userService.signup({
-            email: this.email,
+        this.userService.signUp({
+            email: this.email.trim(),
             password: this.password,
-            name: this.name,
-            username: this.username.toLowerCase(),
+            name: this.name.trim(),
+            username: this.username.trim().toLowerCase(),
             mobile: String(this.mobileExt) + this.mobile,
             provider: 'local'
         }).subscribe(
-            () => {
-                this.login();
-            }, error => {
+            () => this.login(),
+            error => {
                 console.log(error);
+                let msg;
                 if (error.error.error.code === 11000) {
-                    let msg;
                     if (error.error.error.errmsg.indexOf('username_') >= 0) {
                         this.error = 'username';
                         msg = 'Username Already exists';
@@ -146,16 +144,13 @@ export class LoginPage implements OnInit {
                         this.error = 'email';
                         msg = 'Email Already exists';
                     }
-                    this.toastController.create({
-                        message: msg,
-                        duration: 3000
-                    }).then(toast => toast.present());
                 } else {
-                    this.toastController.create({
-                        message: 'Couldn\'t reach server...',
-                        duration: 2000
-                    }).then(toast => toast.present());
+                    msg = 'Couldn\'t reach server...';
                 }
+                this.toastController.create({
+                    message: msg,
+                    duration: 3000
+                }).then(toast => toast.present());
             }
         );
     }

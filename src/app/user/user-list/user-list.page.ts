@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {User} from '../user-page/user.page';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
-import {Observable} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {switchMap, switchMapTo, tap} from 'rxjs/operators';
 
 @Component({
@@ -19,7 +19,9 @@ export class UserListPage {
             switchMap((params: ParamMap) => this.userProvider.getUserByUsername(params.get('username'))),
             tap(user => this.user = user)
         );
-    users$: Observable<User[]> = this.user$.pipe(
+
+    private refresher$ = new Subject();
+    users$: Observable<User[]> = merge(this.user$, this.refresher$).pipe(
         switchMapTo(this.route.data),
         tap(routeData => this.action = routeData.action),
         switchMap(routeData => this.userProvider.getUserList(this.user[routeData.action]))
@@ -30,6 +32,13 @@ export class UserListPage {
         private router: Router,
         public userProvider: UserService
     ) {
+    }
+
+    ionViewWillEnter() {
+        if (this.user) {
+            console.log('Refreshing List');
+            this.refresher$.next(null);
+        }
     }
 
     goToUserDetail(user: User) {

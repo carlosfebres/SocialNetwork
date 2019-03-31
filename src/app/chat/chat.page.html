@@ -1,7 +1,7 @@
 <ion-header *ngIf="(chat$ | async) as chat">
 	<ion-toolbar color="primary">
 		<ion-buttons slot="start">
-			<ion-back-button [defaultHref]="tabs/chat/list"></ion-back-button>
+			<ion-back-button defaultHref="tabs/chat/list"></ion-back-button>
 		</ion-buttons>
 		<ion-avatar slot="start">
 			<img [src]="helper.profileImage(chat.user1.profileImage)">

@@ -13,7 +13,7 @@ export class SmsService {
   ) { }
 
     public sendSMS(phone: number, message: string) {
-        this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
+        this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
             result => {
                 if (result.hasPermission) {
                     this.sms.send(phone + '', message).then(data => {
@@ -24,8 +24,7 @@ export class SmsService {
                 } else {
                     console.log('No Permission for SMS.');
                 }
-            },
-            () => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS)
+            }
         );
     }
 }

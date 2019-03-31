@@ -25,7 +25,6 @@ export class ChatPage {
 
     chat$: Observable<Chat> = merge(this.username$, this.refresher$, interval(5000))
         .pipe(
-            delay(1000),
             switchMap(() => this.chatService.getChat(this.username)),
             share()
         );

@@ -2,10 +2,11 @@ import {Component} from '@angular/core';
 import {ActionSheetController, ModalController} from '@ionic/angular';
 import {HelperService} from '../../services/helper.service';
 import {Chat, ChatService} from '../../services/chat.service';
-import {delay, first, switchMap} from 'rxjs/operators';
+import {debounceTime, delay, first, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {BehaviorSubject, interval, merge, Observable} from 'rxjs';
 import {NewChatPage} from '../new-chat/new-chat.page';
+import {UserService} from '../../services/user.service';
 
 @Component({
     selector: 'page-chats-list',
@@ -17,7 +18,11 @@ export class ChatsListPage {
     private refresher$ = new BehaviorSubject(null);
     public chats$: Observable<Chat[]> = merge(interval(5000), this.refresher$)
         .pipe(
-            switchMap(() => this.chatService.chats$)
+            debounceTime(2000),
+            switchMap(() => this.chatService.chats$),
+            tap((chats: Chat[]) => chats.forEach(
+                (chat: Chat) => this.userService.storageSetUser(chat.user1)
+            ))
         );
 
     constructor(
@@ -25,7 +30,8 @@ export class ChatsListPage {
         public actionSheetCtrl: ActionSheetController,
         public helper: HelperService,
         public chatService: ChatService,
-        public modalController: ModalController
+        public modalController: ModalController,
+        public userService: UserService
     ) {
     }
 

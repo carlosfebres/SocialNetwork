@@ -29,7 +29,7 @@ export class NewTweetPage {
             const loader = await this.loadingCtrl.create({message: 'Please wait...'});
             loader.present();
             this.tweetService.postTweet(this.text, this.file).subscribe(
-                res => {
+                () => {
                     loader.dismiss();
                     this.toastCtrl.create({
                         message: 'Tweet Created',
@@ -37,7 +37,7 @@ export class NewTweetPage {
                     }).then(toast => toast.present());
                     this.modalController.dismiss(true);
                 },
-                (err) => {
+                err => {
                     console.log(err);
                     this.toastCtrl.create({
                         message: JSON.stringify(err),

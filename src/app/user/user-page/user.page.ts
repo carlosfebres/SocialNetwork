@@ -37,6 +37,7 @@ export class UserPage {
     public following = false;
     private user: User;
     private username;
+    private refreshUser$ = new Subject();
     private username$ = this.route.paramMap
         .pipe(
             tap((params: ParamMap) => {
@@ -44,7 +45,6 @@ export class UserPage {
             })
         );
 
-    private refreshUser$ = new Subject();
     public user$: Observable<User> = merge(this.username$, this.refreshUser$)
         .pipe(
             switchMap(() => {
@@ -54,7 +54,7 @@ export class UserPage {
                     return this.userService.getUserByUsername(this.username);
                 } else {
                     this.loggedUser = true;
-                    return this.userService.getLoggedUser(true);
+                    return this.userService.getLoggedUser();
                 }
             }),
             switchMap((user: User) => {

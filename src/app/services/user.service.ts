@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from './http.service';
 import {User} from '../user/user-page/user.page';
-import {BehaviorSubject, from, interval, merge, Observable, of} from 'rxjs';
-import {debounceTime, map, share, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, from, interval, Observable} from 'rxjs';
+import {map, share, switchMap, tap} from 'rxjs/operators';
 import {Storage} from '@ionic/storage';
 
 @Injectable({
@@ -10,37 +10,15 @@ import {Storage} from '@ionic/storage';
 })
 export class UserService {
 
+    public user$: BehaviorSubject<User> = new BehaviorSubject(<User>{});
     public user: User = <User>{};
-    public users: User[] = [];
-    private refresherUser$ = new BehaviorSubject(null);
-    private user$: Observable<User> = merge(
-        interval(10000)
-            .pipe(
-                tap(() => console.log('Refreshing User...'))
-            ),
-        this.refresherUser$
-    ).pipe(
-        debounceTime(2000),
-        switchMap(() => this.http.get('user')
-            .pipe(
-                map((response: any) => {
-                    if (response === 'Unauthorized') {
-                        this.http.removeToken();
-                        throw new Error('No user logged');
-                    }
-                    return response.user;
-                }),
-                tap(user => {
-                    console.log('User: ', user);
-                    if (!this.user._id) {
-                        for (const x of Object.keys(user)) {
-                            this.user[x] = user[x];
-                        }
-                    } else {
-                        this.user = user;
-                    }
-                })
-            )),
+
+    private _users: User[] = [];
+    private _usernames: string[] = [];
+
+    private refreshUser$: Observable<User> = interval(5000).pipe(
+        tap(() => console.log('Refreshing User...')),
+        switchMap(() => this.getLoggedUserFromServer()),
         share()
     );
 
@@ -50,65 +28,84 @@ export class UserService {
     ) {
     }
 
-    refreshUser() {
-        this.refresherUser$.next(null);
+    getLoggedUserFromServer(): Observable<User> {
+        return this.http.get('user')
+            .pipe(
+                map((response: any) => {
+                    if (response === 'Unauthorized') {
+                        this.http.removeToken();
+                        throw new Error('No user logged');
+                    }
+                    return response.user;
+                }),
+                map(user => this.storageSetUser(user)),
+                tap(user => {
+                    console.log('User from server: ', user);
+                    this.user = user;
+                    // this.refreshUser$.subscribe();
+                })
+            );
     }
 
-    getLoggedUser(refresh: boolean = false): Observable<User> {
-        console.log(this.user);
-        if (this.user._id && !refresh) {
-            return of(this.user);
-        } else {
-            return from(this.storage.get('token'))
-                .pipe(
-                    tap(token => {
-                        console.log('Token: ', token);
-                        if (!this.http.getToken() && token) {
-                            console.log(this.http.getToken(), token);
-                            this.http.setToken(token);
-                        }
-                    }),
-                    switchMap(() => this.user$)
-                );
+    getLoggedUser(): Observable<User> {
+        if (this.user$.getValue()._id) {
+            return this.user$;
         }
+        return from(this.storage.get('token'))
+            .pipe(
+                tap(token => {
+                    if (!this.http.getToken() && token) {
+                        this.http.setToken(token);
+                    }
+                }),
+                switchMap(() => this.getLoggedUserFromServer())
+            );
     }
 
     login(email, password): Observable<User> {
         return this.http.post('login', {email, password})
             .pipe(
-                tap((response: any) => {
-                    this.user = response.user;
-                    this.http.setToken(this.user.token);
-                }),
                 map((response: any) => response.user),
-                tap(user => this.storage.set('token', user.token))
+                map(user => this.storageSetUser(user)),
+                tap((user: User) => {
+                    this.user = user;
+                    this.user$.next(user);
+                    this.http.setToken(user.token);
+                    this.storage.set('token', user.token);
+                })
             );
     }
 
-    signup(data) {
+    signUp(data) {
         return this.http.post('signup', data);
     }
 
-
     getUsersByName(value: String): Observable<User[]> {
-        return this.http.post('users/search', {search: value});
+        return this.http.post('user/search', {search: value})
+            .pipe(
+                map(
+                    (users: User[]) => users.map(user => this.storageSetUser(user))
+                )
+            );
     }
 
 
     getUserByUsername(username: string): Observable<User> {
-        return this.http.post('user/username', {username})
-            .pipe(
-                map((response: any) => response.user)
-            );
+        if (this.user.username === username) {
+            return this.getLoggedUser();
+        } else {
+            return this.http.get(`user/${encodeURIComponent(username)}`)
+                .pipe(
+                    map((response: any) => response.user),
+                    map(user => this.storageSetUser(user))
+                );
+        }
     }
 
-    getUser(_id: String): Observable<User> {
-        return this.http.get(`users/${_id}`);
-    }
-
-    updateInfo(data: any) {
-        return this.http.put('users', data).pipe(
+    updateInfo(data: any): Observable<User> {
+        return this.http.put('user', data).pipe(
             map((response: any) => response.user),
+            map(user => this.storageSetUser(user)),
             tap(user => {
                 this.user.name = user.name;
                 this.user.email = user.email;
@@ -117,16 +114,19 @@ export class UserService {
         );
     }
 
-    getUserList(users_id: string[]) {
-        return this.http.post('users/get', {ids: users_id})
+    getUserList(users_id: string[]): Observable<User[]> {
+        return this.http.post('user/getList', {ids: users_id})
             .pipe(
-                map((response: any) => response.users)
+                map((response: any) => response.users),
+                map(
+                    (users: User[]) => users.map(user => this.storageSetUser(user))
+                )
             );
     }
 
 
-    unFollow(id: string) {
-        return this.http.delete(`users/${id}/follow`).pipe(
+    unFollow(id: string): Observable<void | {}> {
+        return this.http.delete(`user/${id}/follow`).pipe(
             tap(() => {
                 const index = this.user.following.indexOf(id);
                 if (index > -1) {
@@ -136,8 +136,8 @@ export class UserService {
         );
     }
 
-    follow(id: string) {
-        return this.http.post(`users/${id}/follow`, {}).pipe(
+    follow(id: string): Observable<void | {}> {
+        return this.http.post(`user/${id}/follow`, {}).pipe(
             tap(() => {
                 const index = this.user.following.indexOf(id);
                 if (index === -1) {
@@ -152,10 +152,10 @@ export class UserService {
         const formData = new FormData();
         formData.append('image', file, file.name);
 
-        return this.http.post('users/photo', formData)
+        return this.http.post('user/photo', formData)
             .pipe(
                 map((data: any) => data.user),
-                tap(user => this.user.profileImage = user.profileImage)
+                map(user => this.storageSetUser(user))
             );
     }
 
@@ -165,5 +165,25 @@ export class UserService {
         this.storage.remove('fingerprintToken');
         this.storage.remove('fingerprintUsername');
         this.http.removeToken();
+    }
+
+
+    storageSetUser(user: User): User {
+        let storageUser = this.storageGetUser(user.username);
+        if (storageUser) {
+            Object.keys(user).forEach(x => {
+                storageUser[x] = user[x];
+            });
+        } else {
+            this._usernames.push(user.username);
+            this._users.push(user);
+            storageUser = user;
+        }
+        return storageUser;
+    }
+
+    storageGetUser(username: string): User {
+        const index = this._usernames.indexOf(username);
+        return this._users[index];
     }
 }

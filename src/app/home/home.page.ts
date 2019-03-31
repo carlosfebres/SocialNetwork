@@ -27,10 +27,9 @@ export class HomePage {
     private pagesTotal: number;
 
     public pageNum$ = new BehaviorSubject<number>(1);
-    public interval$ = interval(15000);
 
     public tweets: Tweet[][];
-    public tweets$: Observable<Tweet[]> = merge(this.pageNum$, this.interval$)
+    public tweets$: Observable<Tweet[]> = this.pageNum$
         .pipe(
             switchMap(() => {
                 return this.tweetService.getUserTweets(this.pageNum$.getValue())
@@ -41,6 +40,12 @@ export class HomePage {
                             if (this.pageNum$.getValue() === 1) {
                                 this.tweets = [];
                             }
+                            tweets.forEach((tweet: Tweet) => {
+                                const storedUser = this.userService.storageGetUser(tweet.user.username);
+                                if (storedUser) {
+                                    tweet.user = storedUser;
+                                }
+                            });
                             this.tweets[this.pageNum$.getValue()] = tweets;
                             return this.tweets.reduce((x, y) => x.concat(y), []);
                         })

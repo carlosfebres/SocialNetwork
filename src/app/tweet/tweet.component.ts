@@ -134,7 +134,7 @@ export class TweetComponent implements OnInit {
                 {
                     text: 'Yes',
                     handler: () => {
-                        this.tweetService.deleteTweet(this.tweet).subscribe(res => {
+                        this.tweetService.deleteTweet(this.tweet).subscribe(() => {
                             if (this.tweets) {
                                 const index = this.tweets.indexOf(this.tweet);
                                 if (index >= 0) {

@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {ActionSheetController, ModalController, NavParams} from '@ionic/angular';
 import {UserService} from '../../services/user.service';
 import {HelperService} from '../../services/helper.service';
-import {Tweet, TweetService} from '../../services/tweets.service';
+import {Comment, Tweet, TweetService} from '../../services/tweets.service';
 import {Router} from '@angular/router';
 
 
@@ -33,21 +33,21 @@ export class CommentsPage {
 
     send() {
         this.tweetService.comment(this.tweet._id, this.comment).subscribe(
-            (res: { comment: any }) => {
-                res.comment.user = this.userService.user;
-                this.tweet.comments.push(res.comment);
+            (comment: Comment) => {
+                comment.user = this.userService.user;
+                this.tweet.comments.push(comment);
                 this.comment = '';
             }
         );
     }
 
-    async showOptions(comment) {
+    async showOptions(comment: Comment) {
         const buttons = [
             {
                 text: 'Go To Profile',
                 handler: () => {
                     this.close();
-                    this.router.navigate([`/user/${comment.user.username}`]);
+                    this.router.navigate(['tabs/user/', comment.user.username]);
                 }
             }, {
                 text: 'Cancel',
@@ -75,7 +75,7 @@ export class CommentsPage {
         this.modalController.dismiss();
     }
 
-    private deleteComment(comment: any) {
+    private deleteComment(comment: Comment) {
         this.tweetService.deleteComment(this.tweet._id, comment._id).subscribe(
             () => {
                 const index = this.tweet.comments.indexOf(comment);

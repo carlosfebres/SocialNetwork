@@ -33,7 +33,7 @@ export class ChatService {
         public http: HttpService,
         public userService: UserService
     ) {
-        this.getChats();
+        this.chats$.subscribe();
     }
 
     private static newChat(user: User): Chat {
@@ -41,10 +41,6 @@ export class ChatService {
             user1: user,
             messages: []
         };
-    }
-
-    async getChats() {
-        return this.chats = await this.chats$.toPromise();
     }
 
     getChat(username: string): Observable<Chat> {

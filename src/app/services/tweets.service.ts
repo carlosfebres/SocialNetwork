@@ -7,11 +7,18 @@ import {map, tap} from 'rxjs/operators';
 
 export interface Tweet {
     user: User;
-    comments: any[];
+    comments: Comment[];
     _id: string;
     favorites?: string[];
     body?: string;
     image?: string;
+    createdAt: string;
+}
+
+export interface Comment {
+    _id: string;
+    body: string;
+    user: User;
     createdAt: string;
 }
 
@@ -24,7 +31,7 @@ export class TweetService {
     }
 
     getUserTweets(pageNum: number) {
-        return this.http.get(`?page=${pageNum}`);
+        return this.http.get(`dashboard/${pageNum}`);
     }
 
     // TWEETS
@@ -52,8 +59,9 @@ export class TweetService {
 
     // COMMENTS
 
-    comment(_id: any, comment: string) {
-        return this.http.post(`tweets/${_id}/comments`, {tweet: _id, comment: comment});
+    comment(_id: any, comment: string): Observable<Comment> {
+        return this.http.post(`tweets/${_id}/comments`, {tweet: _id, comment: comment})
+            .pipe(map((res: any) => res.comment));
     }
 
     deleteComment(tweet_id, comment_id) {
@@ -63,14 +71,10 @@ export class TweetService {
     // LIKES
 
     like(tweet_id) {
-        return this.http.post(`tweets/${tweet_id}/favorites`, {
-            tweet: tweet_id
-        });
+        return this.http.get(`tweets/${tweet_id}/favorites`);
     }
 
     unlike(tweet_id) {
-        return this.http.post(`tweets/${tweet_id}/favorites/unlike`, {
-            tweet: tweet_id
-        });
+        return this.http.delete(`tweets/${tweet_id}/favorites`);
     }
 }
