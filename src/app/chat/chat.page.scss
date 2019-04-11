@@ -1,5 +1,11 @@
 :host {
 
+  .no-messages {
+    margin-top: 40px;
+    text-align: center;
+    color: rgb(170, 170, 170);
+  }
+
   ion-content {
     --padding-start: 5px;
     --padding-end: 5px;
@@ -28,7 +34,7 @@
 
   .chat {
     width: 80%;
-    --background: rgba(150,150,150,.2) !important;
+    --background: rgba(150, 150, 150, .2) !important;
     margin: 4px;
 
     ion-text p {
@@ -47,7 +53,6 @@
       visibility: hidden;
     }
   }
-
 
   ion-item {
     border-radius: 10px;

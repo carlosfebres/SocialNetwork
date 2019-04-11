@@ -1,19 +1,22 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from './http.service';
 import {UserService} from './user.service';
-import {Observable, of} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {Observable, ReplaySubject} from 'rxjs';
+import {first, map, switchMap, tap} from 'rxjs/operators';
 import {User} from '../user/user-page/user.page';
+import {SocketService} from './socket.service';
+
+export interface Message {
+    type: string;
+    message: string;
+    sentBy: any;
+    sentAt: string;
+}
 
 export interface Chat {
     _id?: string;
-    messages: Array<{
-        type: string,
-        message: string,
-        sentBy: any,
-        sentAt: string
-    }>;
-    user1: User;
+    messages: Message[];
+    user: User;
     createdAt?: string;
 }
 
@@ -22,78 +25,90 @@ export interface Chat {
 })
 export class ChatService {
 
-    public chats: Chat[] = [];
-    public chats$: Observable<Chat[]> = this.http.get('chats')
+    private chatsSubject$ = new ReplaySubject(1);
+    public chats$ = this.chatsSubject$.asObservable()
         .pipe(
-            map((response: any) => response.chats),
-            tap(chats => this.chats = chats)
+            tap(() => console.log('Emit')),
+            map(this.sortChats)
         );
+    private dataChat: Chat;
+
 
     constructor(
         public http: HttpService,
-        public userService: UserService
+        public userService: UserService,
+        public socket: SocketService
     ) {
-        this.chats$.subscribe();
-    }
+        this.http.get('chats').subscribe((response: { chats: Chat[] }) => {
+            this.chatsSubject$.next(response.chats);
+        });
 
-    private static newChat(user: User): Chat {
-        return {
-            user1: user,
-            messages: []
-        };
+        socket.fromEvent('message')
+            .pipe(
+                tap(console.log),
+                map((data: { chat: Chat }) => this.dataChat = data.chat),
+                switchMap(dataChat => this.getChat(dataChat.user.username)
+                    .pipe(first())
+                )
+            )
+            .subscribe(chat => {
+                if (chat !== null) {
+                    chat.messages.push(this.dataChat.messages[0]);
+                } else {
+                    this.addChat(this.dataChat);
+                }
+            });
     }
 
     getChat(username: string): Observable<Chat> {
-        console.log('Get Chat By Username: ', username);
-        for (const x of Object.keys(this.chats)) {
-            if (this.chats[x].user1.username === username) {
-                return of(this.chats[x]);
-            }
-        }
-        return this.userService.getUserByUsername(username).pipe(
-            map(user => ChatService.newChat(user))
+        return this.chats$.pipe(
+            map(chats => {
+                console.log('Searching chat for: ', username);
+                console.log(chats);
+                for (const x of Object.keys(chats)) {
+                    if (chats[x].user.username === username) {
+                        return chats[x];
+                    }
+                }
+                return null;
+            })
         );
     }
 
-    refreshChat(chat: Chat): Observable<Chat> {
-        console.log('Refreshing...');
-        return this.http.get(`chat/${chat._id}`)
-            .pipe(
-                map((response: any) => response.chat),
-                tap((refreshedChat: Chat) => chat.messages = refreshedChat.messages)
-            );
+    addChat(chat: Chat) {
+        this.chatsSubject$.pipe(first()).subscribe((chats: Chat[]) => {
+            chats.push(chat);
+            this.chatsSubject$.next(chats);
+        });
     }
+
 
     sendMessageImage(chat: Chat, image: File) {
-        const formData = new FormData();
-        formData.append('message', image, image.name);
-        return this.http.post(`message/${chat.user1._id}`, formData)
-            .pipe(
-                map((response: any) => response.chat),
-                tap(refreshedChat => this.handleSentSuccessful(chat, refreshedChat))
-            );
+        // const formData = new FormData();
+        // formData.append('message', image, image.name);
+        // return this.http.post(`message/${chat.user1._id}`, formData)
+        //     .pipe(
+        //         map((response: any) => response.chat),
+        //         tap(refreshedChat => this.handleSentSuccessful(chat, refreshedChat))
+        //     );
     }
 
-    sendMessage(chat: Chat, message: string): Observable<Chat> {
-        return this.http.post(`message/${chat.user1._id}`, {message})
-            .pipe(
-                map((response: any) => response.chat),
-                tap(refreshedChat => this.handleSentSuccessful(chat, refreshedChat))
-            );
+    sendMessage(to: User, message: string) {
+        this.socket.emit('message', {
+            userId: to._id,
+            message
+        });
+        console.log('Message Emited');
     }
 
-    private handleSentSuccessful(chat: Chat, refreshedChat: Chat) {
-        if (chat.messages) {
-            for (const x of Object.keys(refreshedChat)) {
-                if (x === 'user1') {
-                    continue;
-                }
-                chat[x] = refreshedChat[x];
+    private sortChats(chats: Chat[]) {
+        return chats.sort((a: Chat, b: Chat) => {
+            const lastMessageA: Message = a.messages[a.messages.length - 1];
+            const lastMessageB: Message = b.messages[b.messages.length - 1];
+            if (lastMessageA.sentAt > lastMessageB.sentAt) {
+                return -1;
             }
-            this.chats.push(chat);
-        } else {
-            chat.messages = refreshedChat.messages;
-        }
+            return 1;
+        });
     }
-
 }

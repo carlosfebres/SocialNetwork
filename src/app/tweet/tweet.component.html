@@ -1,6 +1,6 @@
 <ion-card>
 
-	<user-item [user]="tweet.user" [background]="true" (click)="goToUserDetail(tweet.user)"></user-item>
+	<user-item [user]="tweet.user" (click)="goToUserDetail(tweet.user)"></user-item>
 	<hr />
 	<div class="tweet-image" *ngIf="tweet.image">
 		<img [src]="helper.getUrl(tweet.image)">

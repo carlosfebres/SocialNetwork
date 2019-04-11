@@ -1,27 +1,21 @@
-<ion-header *ngIf="(chat$ | async) as chat">
+<ion-header>
 	<ion-toolbar color="primary">
 		<ion-buttons slot="start">
 			<ion-back-button defaultHref="tabs/chat/list"></ion-back-button>
 		</ion-buttons>
 		<ion-avatar slot="start">
-			<img [src]="helper.profileImage(chat.user1.profileImage)">
+			<img [src]="helper.profileImage(chatingWith.profileImage)">
 		</ion-avatar>
 		<ion-title style="padding: 3px 0 3px 16px;">
-			{{chat.user1.name}}
+			{{chatingWith.name}}
 			<br/>
-			<ion-note color="light">@{{chat.user1.username}}</ion-note>
+			<ion-note color="light">@{{chatingWith.username}}</ion-note>
 		</ion-title>
 	</ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="(chat$ | async) as chat">
-
-	<ion-refresher (ionRefresh)="refresh($event)">
-		<ion-refresher-content></ion-refresher-content>
-	</ion-refresher>
-
-	<h5 style="margin-top: 40px; text-align: center; color: rgb(170,170,170);" *ngIf="!chat.messages.length">NO
-		MESSAGES</h5>
+<ion-content>
+	<h5 [class.no-messages]="true" *ngIf="!chat.messages.length">NO MESSAGES</h5>
 	<ion-list lines="none">
 		<ion-item *ngFor="let message of chat.messages" [class.my-message]="userService.user._id === message.sentBy"
 				  [class.other-message]="userService.user._id !== message.sentBy">
@@ -39,7 +33,7 @@
 	</ion-list>
 </ion-content>
 
-<ion-footer *ngIf="(chat$ | async) as chat">
+<ion-footer>
 	<ion-toolbar>
 		<ion-input type="text" placeholder="Message..." [(ngModel)]="message"></ion-input>
 		<ion-buttons slot="start" *ngIf="!message.trim().length">

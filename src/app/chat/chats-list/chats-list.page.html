@@ -8,17 +8,14 @@
 </ion-header>
 
 <ion-content>
-	<ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-		<ion-refresher-content></ion-refresher-content>
-	</ion-refresher>
-	<div *ngIf="(chats$ | async) as chats">
+	<div>
 		<ion-list *ngIf="chats.length">
 			<ion-item *ngFor="let chat of chats" (press)="showOptions(chat)" (click)="goToChat(chat)">
 				<ion-avatar slot="start">
-					<img [src]="helper.profileImage(chat.user1.profileImage)">
+					<img [src]="helper.profileImage(chat.user.profileImage)">
 				</ion-avatar>
 				<ion-label>
-					<h2>{{chat.user1.name}}</h2>
+					<h2>{{chat.user.name}}</h2>
 					<ion-note>{{chat.messages | lastMessageTime}} ago</ion-note>
 					<p>{{chat.messages | lastMessage}}</p>
 				</ion-label>
@@ -32,8 +29,16 @@
 		</div>
 	</div>
 	<ion-fab vertical="bottom" horizontal="end" slot="fixed">
-		<ion-fab-button color="secondary" (click)="newChat()">
-			<ion-icon name="person-add"></ion-icon>
+		<ion-fab-button color="secondary">
+			<ion-icon name="paper-plane"></ion-icon>
 		</ion-fab-button>
+		<ion-fab-list side="start">
+			<ion-fab-button (click)="newChat()">
+				<ion-icon name="person-add"></ion-icon>
+			</ion-fab-button>
+			<ion-fab-button (click)="newChannel()">
+				<ion-icon name="people"></ion-icon>
+			</ion-fab-button>
+		</ion-fab-list>
 	</ion-fab>
 </ion-content>

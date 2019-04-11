@@ -1,7 +1,9 @@
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, pipe, throwError} from 'rxjs';
 import {HelperService} from './helper.service';
+import {catchError} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 interface Options {
     headers?: HttpHeaders | {
@@ -22,56 +24,56 @@ interface Options {
 export class HttpService {
 
     defaultHeaders: any = {};
+    private token;
 
     constructor(
+        private router: Router,
         public http: HttpClient,
         public helper: HelperService
     ) {
     }
 
     setToken(token: String) {
-        console.log(token);
+        this.token = token;
         this.defaultHeaders.Authorization = 'Bearer ' + token;
     }
 
     getToken() {
-        return this.defaultHeaders.Authorization;
+        return this.token;
     }
 
     removeToken() {
         if (this.defaultHeaders.Authorization) {
+            this.token = '';
             delete this.defaultHeaders.Authorization;
         }
     }
 
     public post<T>(url: string, body: any | null, options?: Options): Observable<T> {
-        options = this._headers(options);
-        return this.http.post<T>(this.helper.getUrl(url), body, options);
+        return this.http.post<T>(this.helper.getUrl(url), body, this._headers(options))
+            .pipe(this.handleError()) as Observable<T>;
     }
 
 
     public get<T>(url: string, options?: Options): Observable<T> {
-        options = this._headers(options);
-        return this.http.get<T>(this.helper.getUrl(url), options);
+        return this.http.get<T>(this.helper.getUrl(url), this._headers(options))
+            .pipe(this.handleError()) as Observable<T>;
     }
 
     delete<T>(url: string, options?: Options): Observable<T> {
-        options = this._headers(options);
-        return this.http.delete<T>(this.helper.getUrl(url), options);
+        return this.http.delete<T>(this.helper.getUrl(url), this._headers(options))
+            .pipe(this.handleError()) as Observable<T>;
     }
 
 
     put<T>(url: string, body: any | null, options?: Options): Observable<T> {
-        options = this._headers(options);
-        return this.http.put<T>(this.helper.getUrl(url), body, options);
+        return this.http.put<T>(this.helper.getUrl(url), body, this._headers(options))
+            .pipe(this.handleError()) as Observable<T>;
     }
-
 
     private _headers(options) {
         if (JSON.stringify(this.defaultHeaders) !== '{}') {
-            if (!options) {
-                options = {};
-            }
+            options = options || {};
             if (!options.headers) {
                 options.headers = new HttpHeaders(this.defaultHeaders);
             } else if (options.headers instanceof HttpHeaders) {
@@ -81,6 +83,23 @@ export class HttpService {
             }
         }
         return options;
+    }
+
+
+    private handleError() {
+        return pipe(
+            catchError((err: HttpErrorResponse) => {
+                    console.log(err);
+                    if (err.error === 'Unauthorized') {
+                        this.removeToken();
+                        this.router.navigate(['login']);
+                        this.helper.toast('Session invalid');
+                        throw new Error('No user logged');
+                    }
+                    return throwError(err);
+                }
+            )
+        );
     }
 
 }

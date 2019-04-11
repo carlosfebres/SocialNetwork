@@ -22,7 +22,7 @@ export class LoginPage implements OnInit {
     public name = '';
     public username = '';
     public mobile = '';
-    public mobileExt = 412;
+    public mobileExt = '+58412';
 
     public loginForm = true;
     public error = 'init';
@@ -46,7 +46,10 @@ export class LoginPage implements OnInit {
     }
 
     fingerprint() {
-        this.fingerprintAuthService.forLogging().toPromise().then(() => this.router.navigate(['tabs/dashboard']));
+        this.fingerprintAuthService
+            .forLogging()
+            .toPromise()
+            .then(() => this.router.navigate(['tabs/dashboard']));
     }
 
     execute() {
@@ -116,6 +119,7 @@ export class LoginPage implements OnInit {
     }
 
     private signUp() {
+        this.mobile = this.formatMobile(this.mobile);
         if (!this.error || !this.password || !this.name || !this.username || !this.mobile) {
             this.error = 'input';
             this.toastController.create({
@@ -129,7 +133,7 @@ export class LoginPage implements OnInit {
             password: this.password,
             name: this.name.trim(),
             username: this.username.trim().toLowerCase(),
-            mobile: String(this.mobileExt) + this.mobile,
+            mobile: this.mobileExt + this.mobile,
             provider: 'local'
         }).subscribe(
             () => this.login(),
@@ -160,5 +164,11 @@ export class LoginPage implements OnInit {
             component: ConfigPage
         });
         modal.present();
+    }
+
+    private formatMobile(mobile: string) {
+        const phoneLength = 7;
+        const mobileLength = mobile.length;
+        return '0'.repeat(phoneLength - mobileLength) + mobile;
     }
 }

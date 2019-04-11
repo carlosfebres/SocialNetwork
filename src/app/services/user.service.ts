@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from './http.service';
 import {User} from '../user/user-page/user.page';
-import {BehaviorSubject, from, interval, Observable} from 'rxjs';
-import {map, share, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, from, Observable} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {Storage} from '@ionic/storage';
 
 @Injectable({
@@ -11,16 +11,10 @@ import {Storage} from '@ionic/storage';
 export class UserService {
 
     public user$: BehaviorSubject<User> = new BehaviorSubject(<User>{});
-    public user: User = <User>{};
+    public user: User = {} as User;
 
     private _users: User[] = [];
     private _usernames: string[] = [];
-
-    private refreshUser$: Observable<User> = interval(5000).pipe(
-        tap(() => console.log('Refreshing User...')),
-        switchMap(() => this.getLoggedUserFromServer()),
-        share()
-    );
 
     constructor(
         public http: HttpService,
@@ -31,18 +25,11 @@ export class UserService {
     getLoggedUserFromServer(): Observable<User> {
         return this.http.get('user')
             .pipe(
-                map((response: any) => {
-                    if (response === 'Unauthorized') {
-                        this.http.removeToken();
-                        throw new Error('No user logged');
-                    }
-                    return response.user;
-                }),
+                map((response: { user: User }) => response.user),
                 map(user => this.storageSetUser(user)),
                 tap(user => {
                     console.log('User from server: ', user);
                     this.user = user;
-                    // this.refreshUser$.subscribe();
                 })
             );
     }
@@ -105,12 +92,7 @@ export class UserService {
     updateInfo(data: any): Observable<User> {
         return this.http.put('user', data).pipe(
             map((response: any) => response.user),
-            map(user => this.storageSetUser(user)),
-            tap(user => {
-                this.user.name = user.name;
-                this.user.email = user.email;
-                this.user.username = user.username;
-            })
+            map(user => this.storageSetUser(user))
         );
     }
 
@@ -159,6 +141,7 @@ export class UserService {
             );
     }
 
+    // TODO Remove Storage in HTTPService
     logout() {
         this.user = null;
         this.storage.remove('token');
@@ -167,8 +150,14 @@ export class UserService {
         this.http.removeToken();
     }
 
+    getUsersByPhone(numbers: string[]): Observable<User[]> {
+        return this.http.post('users/phone', {numbers}).pipe(
+            map((result: { users: User[] }) => result.users)
+        );
+    }
 
-    storageSetUser(user: User): User {
+
+    private storageSetUser(user: User): User {
         let storageUser = this.storageGetUser(user.username);
         if (storageUser) {
             Object.keys(user).forEach(x => {
@@ -182,7 +171,7 @@ export class UserService {
         return storageUser;
     }
 
-    storageGetUser(username: string): User {
+    private storageGetUser(username: string): User {
         const index = this._usernames.indexOf(username);
         return this._users[index];
     }

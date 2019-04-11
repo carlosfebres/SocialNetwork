@@ -1,6 +1,7 @@
 <ion-header>
 	<ion-toolbar color="primary">
-		<ion-searchbar animated placeholder="Search User" (ionInput)="search($event)" #searchInput></ion-searchbar>
+		<ion-searchbar placeholder="Search User" (ionInput)="search($event)"
+					   #searchInput></ion-searchbar>
 		<ion-buttons slot="end">
 			<ion-button (click)="close()">
 				<ion-icon name="close" slot="icon-only"></ion-icon>
@@ -9,12 +10,63 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content>
-	<ion-list *ngIf="users$ | async as users">
-		<div *ngFor="let user of users">
-			<user-item [user]="user" *ngIf="user._id !== userService.user._id" (click)="goToChat(user)"></user-item>
-		</div>
-		<h4 *ngIf="users.length == 0 && clean">Search Something...</h4>
-		<h4 *ngIf="users.length == 0 && !clean">No Results!</h4>
+<ion-content [ngSwitch]="showingList">
+
+	<p *ngIf="action !== 'user'">
+		<ion-chip outline *ngFor="let user of channelUsers" (click)="removeUserFromChannel(user)">
+			<ion-avatar>
+				<img [src]="helper.profileImage(user.profileImage)">
+			</ion-avatar>
+			<ion-label>{{user.name}}</ion-label>
+			<ion-icon name="close-circle"></ion-icon>
+		</ion-chip>
+	</p>
+
+	<ion-list *ngSwitchCase="'contacts'">
+		<ion-item-group *ngIf="registeredContact.length + contacts.length">
+			<ion-item-divider>
+				<ion-label>Users Found</ion-label>
+			</ion-item-divider>
+			<user-item [user]="user" *ngFor="let user of registeredContact | notLoggedUser | async"
+					   (click)="userClicked(user)" [showNumber]="true"></user-item>
+		</ion-item-group>
+		<ion-item-group *ngIf="registeredContact.length + contacts.length">
+			<ion-item-divider>
+				<ion-label>Contacts</ion-label>
+			</ion-item-divider>
+			<contact [contact]="contact" *ngFor="let contact of contacts"></contact>
+		</ion-item-group>
+		<ion-item *ngIf="!(registeredContact.length + contacts.length)" lines="none">
+			<h4>{{cleanContacts?'Search Something...':'No Results!'}}</h4>
+		</ion-item>
 	</ion-list>
+
+	<ion-list *ngSwitchCase="'users'">
+		<user-item [user]="user" *ngFor="let user of users | notLoggedUser | async"
+				   (click)="userClicked(user)"></user-item>
+		<ion-item *ngIf="!users.length" lines="none">
+			<h4>{{cleanUsers?'Search Something...':'No Results!'}}</h4>
+		</ion-item>
+	</ion-list>
+
+
+	<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="action !== 'user'">
+		<ion-fab-button color="secondary">
+			<ion-icon name="checkmark"></ion-icon>
+		</ion-fab-button>
+	</ion-fab>
+
 </ion-content>
+
+<ion-footer>
+	<ion-toolbar color="primary">
+		<ion-segment (ionChange)="segmentChanged($event)">
+			<ion-segment-button value="contacts" checked>
+				<ion-label>Contacts</ion-label>
+			</ion-segment-button>
+			<ion-segment-button value="users">
+				<ion-label>Users</ion-label>
+			</ion-segment-button>
+		</ion-segment>
+	</ion-toolbar>
+</ion-footer>

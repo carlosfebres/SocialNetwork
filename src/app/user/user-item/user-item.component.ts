@@ -9,13 +9,8 @@ import {HelperService} from '../../services/helper.service';
 export class UserItemComponent {
 
     @Input() user: any;
-    @Input() background = false;
-    @Output() click = new EventEmitter();
+    @Input() showNumber = false;
 
     constructor(public helper: HelperService) {
-    }
-
-    onClick() {
-        this.click.emit();
     }
 }

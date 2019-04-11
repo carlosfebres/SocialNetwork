@@ -19,7 +19,7 @@ export class FromNowPipe implements PipeTransform {
             return difference + 'h';
 
         }
-        return difference + 'min';
+        return difference + ' minutes';
     }
 
     private _toMinutes(time) {

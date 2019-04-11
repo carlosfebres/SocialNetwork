@@ -10,11 +10,11 @@ import {UploadPicturePage} from '../../upload-picture/upload-picture-page.compon
 
 
 export interface User {
-    _id?: string;
-    name?: string;
+    _id: string;
+    name: string;
     email?: string;
-    username?: string;
-    profileImage?: string;
+    username: string;
+    profileImage: string;
     followers?: string[];
     following?: string[];
     token?: string;

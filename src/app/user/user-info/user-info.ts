@@ -14,7 +14,7 @@ export class UserInfoPage {
         email: '',
         username: '',
         name: ''
-    };
+    } as User;
 
     constructor(
         public toastCtrl: ToastController,

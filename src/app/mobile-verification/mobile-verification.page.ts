@@ -4,6 +4,7 @@ import {HttpService} from '../services/http.service';
 import {UserService} from '../services/user.service';
 import {Router} from '@angular/router';
 import {tap} from 'rxjs/operators';
+import {HelperService} from '../services/helper.service';
 
 @Component({
     selector: 'app-mobile-verification',
@@ -12,14 +13,14 @@ import {tap} from 'rxjs/operators';
 })
 export class MobileVerificationPage implements OnInit {
 
-    code: number;
+    code: string;
     load = false;
 
     constructor(
-        public toastController: ToastController,
         public http: HttpService,
         public userService: UserService,
         public router: Router,
+        public helper: HelperService,
         public loadingController: LoadingController
     ) {
     }
@@ -34,21 +35,9 @@ export class MobileVerificationPage implements OnInit {
         });
     }
 
-    private async toast(msg: string) {
-        const toast = await this.toastController.create({
-            message: msg,
-            duration: 3000
-        });
-        toast.present();
-    }
 
     resend() {
-        this.requestCode().subscribe(() => {
-            this.toastController.create({
-                message: 'Code Resent!',
-                duration: 2000
-            }).then(toast => toast.present());
-        });
+        this.requestCode().subscribe(() => this.helper.toast('Code Resent!'));
     }
 
     verify() {
@@ -59,12 +48,12 @@ export class MobileVerificationPage implements OnInit {
                         this.router.navigate(['tabs/dashboard']);
                         this.userService.user.mobileVerified = true;
                     } else {
-                        this.toast('Code Invalid...');
+                        this.helper.toast('Code Invalid...');
                     }
                 }
             );
         } else {
-            this.toast('Please Enter a code.');
+            this.helper.toast('Please Enter a code.');
         }
     }
 

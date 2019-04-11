@@ -26,15 +26,15 @@
 			  [class.invalid]="(error == 'input' && mobile === '') || error == 'mobile'">
 		<ion-row>
 			<ion-col size="4">
-				<ion-select color="light" value="412" (ionChange)="setExt($event.target.value)">
-					<ion-select-option value="412">0412</ion-select-option>
-					<ion-select-option value="414">0414</ion-select-option>
-					<ion-select-option value="424">0424</ion-select-option>
-					<ion-select-option value="424">0416</ion-select-option>
+				<ion-select color="light" value="+58412" (ionChange)="setExt($event.target.value)">
+					<ion-select-option value="+58412">0412</ion-select-option>
+					<ion-select-option value="+58414">0414</ion-select-option>
+					<ion-select-option value="+58424">0424</ion-select-option>
+					<ion-select-option value="+58424">0416</ion-select-option>
 				</ion-select>
 			</ion-col>
 			<ion-col size="8">
-				<ion-input placeholder="Mobile" type="number" [(ngModel)]="mobile" maxlength="7" max="9999999"></ion-input>
+				<ion-input placeholder="Mobile" type="number" [(ngModel)]="mobile" min="0" max="9999999"></ion-input>
 			</ion-col>
 		</ion-row>
 	</ion-grid>

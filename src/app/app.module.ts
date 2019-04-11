@@ -14,6 +14,8 @@ import {HttpClientModule} from '@angular/common/http';
 import {AndroidPermissions} from '@ionic-native/android-permissions/ngx';
 import {SMS} from '@ionic-native/sms/ngx';
 import {AndroidFingerprintAuth} from '@ionic-native/android-fingerprint-auth/ngx';
+import {SocketIoModule} from 'ngx-socket-io';
+
 
 @NgModule({
     declarations: [AppComponent],
@@ -24,6 +26,7 @@ import {AndroidFingerprintAuth} from '@ionic-native/android-fingerprint-auth/ngx
         HttpClientModule,
         IonicModule.forRoot(),
         IonicStorageModule.forRoot(),
+        SocketIoModule,
         AppRoutingModule
     ],
     providers: [

@@ -1,10 +1,11 @@
-<ion-item [class.background]="background" fill="clear" lines="none" (click)="onClick()">
+<ion-item fill="clear" lines="none">
 	<ion-avatar slot="start">
-		<img [src]="user.profileImage?helper.getUrl(user.profileImage):'assets/imgs/img_avatar.png'">
+		<img [src]="helper.profileImage(user.profileImage)">
 	</ion-avatar>
 	<ion-label>
 		<ion-text>
 			<h2>{{user.name}}</h2>
+			<ion-note *ngIf="showNumber">{{user.mobile}}</ion-note>
 			<p>@{{user.username}}</p>
 		</ion-text>
 	</ion-label>

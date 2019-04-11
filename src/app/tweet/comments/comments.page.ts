@@ -24,8 +24,7 @@ export class CommentsPage {
         public actionSheetController: ActionSheetController,
         public helper: HelperService,
         public modalController: ModalController
-    ) {
-    }
+    ) {}
 
     ionViewWillEnter() {
         this.tweet = this.navParams.get('tweet');

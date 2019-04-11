@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {ModalController, NavParams, ToastController} from '@ionic/angular';
+import {HelperService} from '../services/helper.service';
 
 @Component({
     selector: 'page-update-profile-picture',
@@ -13,9 +14,9 @@ export class UploadPicturePage {
     title = '';
 
     constructor(
-        public toastCtrl: ToastController,
         private navParams: NavParams,
-        private modalController: ModalController
+        private modalController: ModalController,
+        private helper: HelperService
     ) {
     }
 
@@ -27,10 +28,7 @@ export class UploadPicturePage {
         if (this.file) {
             this.modalController.dismiss(this.file);
         } else {
-            this.toastCtrl.create({
-                message: 'Choose an Image...',
-                duration: 3000
-            }).then(toast => toast.present());
+            this.helper.toast('Choose an Image...');
         }
     }
 

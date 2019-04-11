@@ -2,7 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {ModalController} from '@ionic/angular';
 import {Tweet, TweetService} from '../services/tweets.service';
-import {BehaviorSubject, interval, merge, Observable, timer} from 'rxjs';
+import {BehaviorSubject, Observable, timer} from 'rxjs';
 import {first, map, share, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {NewTweetPage} from '../tweet/new-tweet/new-tweet.home';
@@ -40,12 +40,6 @@ export class HomePage {
                             if (this.pageNum$.getValue() === 1) {
                                 this.tweets = [];
                             }
-                            tweets.forEach((tweet: Tweet) => {
-                                const storedUser = this.userService.storageGetUser(tweet.user.username);
-                                if (storedUser) {
-                                    tweet.user = storedUser;
-                                }
-                            });
                             this.tweets[this.pageNum$.getValue()] = tweets;
                             return this.tweets.reduce((x, y) => x.concat(y), []);
                         })
