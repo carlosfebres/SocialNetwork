@@ -10,81 +10,80 @@ import {User} from '../user/user-page/user.page';
 
 
 @Component({
-    selector: 'page-chat',
-    templateUrl: './chat.page.html',
-    styleUrls: ['./chat.page.scss']
+	selector: 'page-chat',
+	templateUrl: './chat.page.html',
+	styleUrls: ['./chat.page.scss']
 })
 export class ChatPage implements OnInit {
 
-    username: string;
+	username: string;
 
-    chat: Chat = {messages: []} as Chat;
-    chatingWith: User = {} as User;
-    chat$ = this.route.paramMap
-        .pipe(
-            map((params: ParamMap) => params.get('username')),
-            tap(username => this.username = username),
-            switchMap(username => this.chatService.getChat(username))
-        );
+	chat: Chat = {messages: []} as Chat;
+	chatingWith: User = {} as User;
+	chat$ = this.route.paramMap
+		.pipe(
+			map((params: ParamMap) => params.get('username')),
+			tap(username => this.username = username),
+			switchMap(username => this.chatService.getChat(username))
+		);
 
-    message = '';
+	message = '';
 
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private loadingController: LoadingController,
-        public modalController: ModalController,
-        public helper: HelperService,
-        public userService: UserService,
-        public chatService: ChatService
-    ) {
-    }
+	constructor(
+		private route: ActivatedRoute,
+		private router: Router,
+		private loadingController: LoadingController,
+		public modalController: ModalController,
+		public helper: HelperService,
+		public userService: UserService,
+		public chatService: ChatService
+	) {
+	}
 
-    ngOnInit() {
-        this.chatService.chats$.subscribe(c => console.log(c));
-        this.chat$.subscribe(
-            chat => {
-                if (chat !== null) {
-                    this.chat = chat;
-                }
-                this.userService.getUserByUsername(this.username)
-                    .subscribe((user: User) => this.chat.user = this.chatingWith = user);
-            }
-        );
-    }
+	ngOnInit() {
+		this.chatService.chats$.subscribe(c => console.log(c));
+		this.chat$.subscribe(
+			chat => {
+				if (chat !== null) {
+					this.chat = chat;
+				}
+				this.userService.getUserByUsername(this.username)
+					.subscribe((user: User) => this.chat.user = this.chatingWith = user);
+			}
+		);
+	}
 
 
-    async sendImage(chat: Chat) {
-        const modal = await this.modalController.create({
-            component: UploadPicturePage,
-            componentProps: {
-                title: 'Send Image To @' + chat.user.username
-            }
-        });
+	async sendImage(chat: Chat) {
+		const modal = await this.modalController.create({
+			component: UploadPicturePage,
+			componentProps: {
+				title: 'Send Image To @' + chat.user.username
+			}
+		});
 
-        modal.onDidDismiss().then(async res => {
-            const loader = await this.loadingController.create({message: 'Loading search...'});
-            loader.present();
-            this.chatService.sendMessageImage(chat, res.data);
-            loader.dismiss();
-        });
+		modal.onDidDismiss().then(async res => {
+			const loader = await this.loadingController.create({message: 'Loading search...'});
+			loader.present();
+			this.chatService.sendMessageImage(chat, res.data).subscribe(() => loader.dismiss());
+		});
 
-        modal.present();
-    }
+		modal.present();
+	}
 
-    sendMessage() {
-        this.chatService.sendMessage(this.chatingWith, this.message);
-        this.message = '';
-    }
+	sendMessage() {
+		this.chatService.sendMessage(this.chatingWith, this.message);
+		this.message = '';
+	}
 
-    getUserImage(chat: Chat, message) {
-        let img;
-        if (message.sentBy === this.userService.user._id) {
-            img = this.userService.user.profileImage;
-        } else {
-            img = chat.user.profileImage;
-        }
-        return this.helper.profileImage(img);
-    }
+	getUserImage(chat: Chat, message) {
+		let img;
+		if (message.sentBy === this.userService.user._id) {
+			img = this.userService.user.profileImage;
+		} else {
+			img = chat.user.profileImage;
+		}
+		return this.helper.profileImage(img);
+	}
 
 }

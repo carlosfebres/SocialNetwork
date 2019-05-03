@@ -39,9 +39,10 @@ export class ConfigPage {
         this.close();
     }
 
+
     server() {
         this.close();
-        this.router.navigate(['sms-server']);
+        this.router.navigate(['sms']);
     }
 
     close() {

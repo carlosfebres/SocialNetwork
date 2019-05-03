@@ -1,7 +1,7 @@
 <ion-header>
 	<ion-toolbar color="primary">
 		<ion-searchbar placeholder="Search User" (ionInput)="search($event)"
-					   #searchInput></ion-searchbar>
+                       #searchInput></ion-searchbar>
 		<ion-buttons slot="end">
 			<ion-button (click)="close()">
 				<ion-icon name="close" slot="icon-only"></ion-icon>
@@ -15,7 +15,7 @@
 	<p *ngIf="action !== 'user'">
 		<ion-chip outline *ngFor="let user of channelUsers" (click)="removeUserFromChannel(user)">
 			<ion-avatar>
-				<img [src]="helper.profileImage(user.profileImage)">
+				<img alt="profileImage" [src]="helper.profileImage(user.profileImage)">
 			</ion-avatar>
 			<ion-label>{{user.name}}</ion-label>
 			<ion-icon name="close-circle"></ion-icon>
@@ -27,8 +27,9 @@
 			<ion-item-divider>
 				<ion-label>Users Found</ion-label>
 			</ion-item-divider>
-			<user-item [user]="user" *ngFor="let user of registeredContact | notLoggedUser | async"
-					   (click)="userClicked(user)" [showNumber]="true"></user-item>
+			<user-item [user]="userRegistered.user" *ngFor="let userRegistered of registeredContact"
+					   (click)="userClicked(userRegistered); userRegistered.selected = !userRegistered.selected"
+					   [class.user-selected]="userRegistered.selected" [showNumber]="true"></user-item>
 		</ion-item-group>
 		<ion-item-group *ngIf="registeredContact.length + contacts.length">
 			<ion-item-divider>
@@ -37,15 +38,15 @@
 			<contact [contact]="contact" *ngFor="let contact of contacts"></contact>
 		</ion-item-group>
 		<ion-item *ngIf="!(registeredContact.length + contacts.length)" lines="none">
-			<h4>{{cleanContacts?'Search Something...':'No Results!'}}</h4>
+			<h4>{{cleanContacts ? 'Search Something...' : 'No Results!'}}</h4>
 		</ion-item>
 	</ion-list>
 
 	<ion-list *ngSwitchCase="'users'">
-		<user-item [user]="user" *ngFor="let user of users | notLoggedUser | async"
-				   (click)="userClicked(user)"></user-item>
+		<user-item [user]="user.user" *ngFor="let user of users"
+				   (click)="userClicked(user)" [class.user-selected]="user.selected"></user-item>
 		<ion-item *ngIf="!users.length" lines="none">
-			<h4>{{cleanUsers?'Search Something...':'No Results!'}}</h4>
+			<h4>{{cleanUsers ? 'Search Something...' : 'No Results!'}}</h4>
 		</ion-item>
 	</ion-list>
 
